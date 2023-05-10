@@ -1,8 +1,9 @@
 public class AssignBlock : ActionBlock {
     public VariableBlock VariableBlock;
+    public OwnValueBlock ValueBlock;
 
     public override void ExecuteFunction() {
-        OutputValue = VariableBlock.GetOutputValue();
+        OutputValue = ValueBlock.GetOutputValue();
         VariableBlock.AssignOutputValue(OutputValue);
 
         base.ExecuteFunction();

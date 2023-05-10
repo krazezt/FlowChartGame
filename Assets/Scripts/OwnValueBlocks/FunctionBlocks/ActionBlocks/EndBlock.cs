@@ -3,7 +3,7 @@ using UnityEngine;
 public class EndBlock : ActionBlock {
 
     public override void ExecuteFunction() {
-        base.ExecuteFunction();
+        Debug.Log("EndBlock: " + gameObject.name);
 
         if (CheckEndCondition()) {
             Debug.Log("Win");

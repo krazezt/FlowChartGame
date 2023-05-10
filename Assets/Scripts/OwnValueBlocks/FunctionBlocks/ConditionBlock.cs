@@ -10,8 +10,8 @@ public class ConditionBlock : FunctionBlock {
     public FunctionBlock TrueConditionBlock;
     public FunctionBlock FalseConditionBlock;
 
-    public FunctionBlock LeftSideOperandBlock;
-    public FunctionBlock RightSideOperandBlock;
+    public OwnValueBlock LeftSideOperandBlock;
+    public OwnValueBlock RightSideOperandBlock;
     public Operator operatorType;
 
     public override void ExecuteFunction() {
