@@ -1,18 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class EndBlock : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+public class EndBlock : ActionBlock {
+
+    public override void ExecuteFunction() {
+        base.ExecuteFunction();
+
+        if (CheckEndCondition()) {
+            Debug.Log("Win");
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    protected virtual bool CheckEndCondition() {
+        return false;
     }
 }

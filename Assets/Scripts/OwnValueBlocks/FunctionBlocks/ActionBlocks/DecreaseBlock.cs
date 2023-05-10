@@ -1,18 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+public class DecreaseBlock : ActionBlock {
+    public VariableBlock VariableBlock;
 
-public class DecreaseBlock : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public override void ExecuteFunction() {
+        OutputValue = VariableBlock.GetOutputValue() - 1;
+        VariableBlock.AssignOutputValue(OutputValue);
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        base.ExecuteFunction();
     }
 }

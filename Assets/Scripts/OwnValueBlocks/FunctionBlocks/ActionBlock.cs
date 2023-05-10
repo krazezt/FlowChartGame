@@ -1,18 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+public class ActionBlock : FunctionBlock {
+    public FunctionBlock NextBlock;
 
-public class ActionBlock : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public override void ExecuteFunction() {
+        base.ExecuteFunction();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        NextBlock.ExecuteFunction();
     }
 }

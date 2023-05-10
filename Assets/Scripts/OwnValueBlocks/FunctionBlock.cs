@@ -1,18 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class FunctionBlock : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+public class FunctionBlock : OwnValueBlock {
+    public FunctionBlock PrevBlock;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public virtual void ExecuteFunction() {
+        Debug.Log("FunctionBlock: " + gameObject.name);
     }
 }

@@ -1,18 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+public class VariableBlock : OwnValueBlock {
 
-public class VariableBlock : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public void AssignOutputValue(int value) {
+        OutputValue = value;
     }
 }

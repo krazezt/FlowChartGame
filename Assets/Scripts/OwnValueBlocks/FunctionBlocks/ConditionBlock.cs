@@ -1,18 +1,44 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+public class ConditionBlock : FunctionBlock {
 
-public class ConditionBlock : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    public enum Operator {
+        LESS,
+        GREATER,
+        LESS_OR_EQUAL,
+        GREATER_OR_EQUAL,
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public FunctionBlock TrueConditionBlock;
+    public FunctionBlock FalseConditionBlock;
+
+    public FunctionBlock LeftSideOperandBlock;
+    public FunctionBlock RightSideOperandBlock;
+    public Operator operatorType;
+
+    public override void ExecuteFunction() {
+        base.ExecuteFunction();
+
+        if (CheckCondition())
+            TrueConditionBlock.ExecuteFunction();
+        else
+            FalseConditionBlock.ExecuteFunction();
+    }
+
+    protected bool CheckCondition() {
+        switch (operatorType) {
+            case Operator.LESS:
+                return LeftSideOperandBlock.GetOutputValue() < RightSideOperandBlock.GetOutputValue();
+
+            case Operator.GREATER:
+                return LeftSideOperandBlock.GetOutputValue() > RightSideOperandBlock.GetOutputValue();
+
+            case Operator.LESS_OR_EQUAL:
+                return LeftSideOperandBlock.GetOutputValue() <= RightSideOperandBlock.GetOutputValue();
+
+            case Operator.GREATER_OR_EQUAL:
+                return LeftSideOperandBlock.GetOutputValue() <= RightSideOperandBlock.GetOutputValue();
+
+            default:
+                return false;
+        }
     }
 }

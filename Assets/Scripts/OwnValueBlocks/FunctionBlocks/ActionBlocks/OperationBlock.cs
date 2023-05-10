@@ -1,18 +1,35 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+public class OperationBlock : ActionBlock {
 
-public class OperationBlock : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    public enum Operator {
+        ADD,
+        SUBTRACT,
+        MULTIPLY,
+        DIVIDE,
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public OwnValueBlock LeftSideOperandBlock;
+    public OwnValueBlock RightSideOperandBlock;
+    public Operator operatorType;
+
+    public override void ExecuteFunction() {
+        switch (operatorType) {
+            case Operator.ADD:
+                OutputValue = LeftSideOperandBlock.GetOutputValue() + RightSideOperandBlock.GetOutputValue();
+                break;
+
+            case Operator.SUBTRACT:
+                OutputValue = LeftSideOperandBlock.GetOutputValue() - RightSideOperandBlock.GetOutputValue();
+                break;
+
+            case Operator.MULTIPLY:
+                OutputValue = LeftSideOperandBlock.GetOutputValue() * RightSideOperandBlock.GetOutputValue();
+                break;
+
+            case Operator.DIVIDE:
+                OutputValue = LeftSideOperandBlock.GetOutputValue() / RightSideOperandBlock.GetOutputValue();
+                break;
+        }
+
+        base.ExecuteFunction();
     }
 }
