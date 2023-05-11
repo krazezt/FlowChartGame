@@ -5,5 +5,6 @@ public class FunctionBlock : OwnValueBlock {
 
     public virtual void ExecuteFunction() {
         Debug.Log("FunctionBlock: " + gameObject.name);
+        GameManager.instance.AppendResultLinePoint(gameObject);
     }
 }

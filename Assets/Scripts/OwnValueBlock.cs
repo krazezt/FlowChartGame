@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class OwnValueBlock : MonoBehaviour {
+public class OwnValueBlock : CoreBlock {
 
     [SerializeField]
     protected int OutputValue;
