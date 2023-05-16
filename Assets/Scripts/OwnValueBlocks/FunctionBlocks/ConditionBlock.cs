@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class ConditionBlock : FunctionBlock {
 
     public enum Operator {
@@ -10,17 +12,31 @@ public class ConditionBlock : FunctionBlock {
     public FunctionBlock TrueConditionBlock;
     public FunctionBlock FalseConditionBlock;
 
+    public ConnectLineController lineToTrue;
+    public ConnectLineController lineToFalse;
+
     public OwnValueBlock LeftSideOperandBlock;
     public OwnValueBlock RightSideOperandBlock;
     public Operator operatorType;
 
-    public override void ExecuteFunction() {
+    public override bool ExecuteFunction() {
         base.ExecuteFunction();
 
         if (CheckCondition())
             TrueConditionBlock.ExecuteFunction();
         else
             FalseConditionBlock.ExecuteFunction();
+
+        return true;
+    }
+
+    protected override void Awake() {
+        base.Awake();
+
+        TrueConditionBlock = null;
+        FalseConditionBlock = null;
+        lineToTrue = null;
+        lineToFalse = null;
     }
 
     protected bool CheckCondition() {
@@ -40,5 +56,66 @@ public class ConditionBlock : FunctionBlock {
             default:
                 return false;
         }
+    }
+
+    protected override void StartConnect() {
+        if (TrueConditionBlock == null)
+            GameManager.instance.ShowPrimaryVirtualLine(shapeBehavior.CalculateIntersectPosition(MouseWorldPosition()));
+        else if (FalseConditionBlock == null)
+            GameManager.instance.ShowSecondaryVirtualLine(shapeBehavior.CalculateIntersectPosition(MouseWorldPosition()));
+        else
+            GameManager.instance.ShowPrimaryVirtualLine(shapeBehavior.CalculateIntersectPosition(MouseWorldPosition()));
+
+        state = State.Connect;
+    }
+
+    protected override bool EndConnect() {
+        if (!base.EndConnect())
+            return false;
+
+        if (TrueConditionBlock == null) {
+            SetTrueConnection(m_listConnection[^1].gameObject);
+        } else if (FalseConditionBlock == null) {
+            SetFalseConnection(m_listConnection[^1].gameObject);
+        } else {
+            SetFalseConnection(null);
+            SetTrueConnection(m_listConnection[^1].gameObject);
+        }
+
+        return true;
+    }
+
+    private void SetTrueConnection(GameObject obj) {
+        if (obj == null) {
+            TrueConditionBlock = null;
+            if (lineToTrue != null)
+                Destroy(lineToTrue.gameObject);
+            lineToTrue = null;
+
+            return;
+        }
+
+        TrueConditionBlock = obj.GetComponent<FunctionBlock>();
+
+        if (lineToTrue != null)
+            Destroy(lineToTrue.gameObject);
+        lineToTrue = GameManager.instance.CreateConnectPrimary(this, TrueConditionBlock);
+    }
+
+    private void SetFalseConnection(GameObject obj) {
+        if (obj == null) {
+            FalseConditionBlock = null;
+            if (lineToFalse != null)
+                Destroy(lineToFalse.gameObject);
+            lineToFalse = null;
+
+            return;
+        }
+
+        FalseConditionBlock = obj.GetComponent<FunctionBlock>();
+
+        if (lineToFalse != null)
+            Destroy(lineToFalse.gameObject);
+        lineToFalse = GameManager.instance.CreateConnectSecondary(this, FalseConditionBlock);
     }
 }

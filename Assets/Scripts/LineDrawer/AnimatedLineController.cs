@@ -4,19 +4,20 @@ using System.Linq;
 using UnityEngine;
 
 public class AnimatedLineController : MonoBehaviour {
-    [SerializeField] private float animationDuration = 2f ;
-    [SerializeField] private List<GameObject> linePoints;
+    public List<GameObject> linePoints;
 
+    private float segmentDuration;
     private LineRenderer lineRenderer;
     private int pointsCount;
 
     private void Start() {
+        segmentDuration = GameConfig.VISUALIZE_SEGMENT_DURATION;
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.enabled = false;
     }
 
     private void Update() {
-        lineRenderer.positionCount = linePoints.Count;
+
         lineRenderer.SetPositions(linePoints.Select(point => point.transform.position).ToArray());
 
         if (Input.GetKeyDown(KeyCode.P))
@@ -24,11 +25,22 @@ public class AnimatedLineController : MonoBehaviour {
     }
 
     public void ClearPoints() {
+        Hide();
         linePoints.Clear();
+        lineRenderer.positionCount = linePoints.Count;
     }
 
     public void AddPoint(GameObject newPoint) {
         linePoints.Add(newPoint);
+        lineRenderer.positionCount = linePoints.Count;
+    }
+
+    public void Show() {
+        lineRenderer.enabled = true;
+    }
+
+    public void Hide() {
+        lineRenderer.enabled = false;
     }
 
     public void StartAnimateLine() {
@@ -38,7 +50,7 @@ public class AnimatedLineController : MonoBehaviour {
 
     private IEnumerator AnimateLine() {
         pointsCount = linePoints.Count;
-        float segmentDuration = animationDuration / pointsCount;
+        //float segmentDuration = animationDurationOneEdge / pointsCount;
 
         for (int i = 0; i < pointsCount - 1; i++) {
             float startTime = Time.time;
@@ -52,8 +64,10 @@ public class AnimatedLineController : MonoBehaviour {
                 pos = Vector3.Lerp(startPosition, endPosition, t);
 
                 // animate all other points except point at index i
-                for (int j = i + 1; j < pointsCount; j++)
+                for (int j = i + 1; j < pointsCount; j++) {
+                    Debug.Log(j);
                     lineRenderer.SetPosition(j, pos);
+                }
 
                 yield return null;
             }

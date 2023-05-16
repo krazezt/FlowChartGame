@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class StartBlock : ActionBlock {
 
-    public override void ExecuteFunction() {
+    public override bool ExecuteFunction() {
         GameManager.instance.ClearResultPoint();
 
-        base.ExecuteFunction();
+        return base.ExecuteFunction();
     }
 
     private void Update() {

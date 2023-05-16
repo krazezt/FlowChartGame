@@ -11,7 +11,7 @@ public class OperationBlock : ActionBlock {
     public OwnValueBlock RightSideOperandBlock;
     public Operator operatorType;
 
-    public override void ExecuteFunction() {
+    public override bool ExecuteFunction() {
         switch (operatorType) {
             case Operator.ADD:
                 OutputValue = LeftSideOperandBlock.GetOutputValue() + RightSideOperandBlock.GetOutputValue();
@@ -30,6 +30,6 @@ public class OperationBlock : ActionBlock {
                 break;
         }
 
-        base.ExecuteFunction();
+        return base.ExecuteFunction();
     }
 }

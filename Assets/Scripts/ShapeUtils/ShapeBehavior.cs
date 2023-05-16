@@ -1,13 +1,14 @@
 using UnityEngine;
 
+[RequireComponent(typeof(LineRenderer))]
 public class ShapeBehavior : MonoBehaviour {
-    public Vector3 connectPoint;
     public GameObject connectObj;
-    public GameObject intersectObj;
-    protected LineRenderer lineRenderer;
+    public LineRenderer lineRenderer;
 
     [Header("Tests")]
     public LineRenderer testLine;
+
+    public GameObject intersectObj;
 
     [HideInInspector]
     public Vector3 intersectPoint;
@@ -18,18 +19,21 @@ public class ShapeBehavior : MonoBehaviour {
     }
 
     protected virtual void Update() {
-        if (connectObj != null) {
-            connectPoint = connectObj.transform.position;
-        }
-
         RenderShapeOutline();
-        CalculateIntersectPosition();
+
+        if (connectObj != null && testLine != null && intersectObj != null)
+            CalculateIntersectPosition(connectObj.transform.position);
     }
 
     public virtual void RenderShapeOutline() {
     }
 
-    public virtual Vector3 CalculateIntersectPosition() {
+    public virtual Vector3 CalculateIntersectPosition(Vector3 connectPoint) {
         return Vector3.zero;
+    }
+
+    public virtual void UpdateIntersectObjPos() {
+        if (intersectObj != null)
+            intersectObj.transform.position = intersectPoint;
     }
 }

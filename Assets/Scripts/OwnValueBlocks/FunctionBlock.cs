@@ -1,10 +1,9 @@
 using UnityEngine;
 
 public class FunctionBlock : OwnValueBlock {
-    public FunctionBlock PrevBlock;
-
-    public virtual void ExecuteFunction() {
-        Debug.Log("FunctionBlock: " + gameObject.name);
+    public virtual bool ExecuteFunction() {
+        //Debug.Log("FunctionBlock: " + gameObject.name);
         GameManager.instance.AppendResultLinePoint(gameObject);
+        return false;
     }
 }

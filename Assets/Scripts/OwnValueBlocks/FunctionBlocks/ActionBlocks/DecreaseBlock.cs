@@ -1,10 +1,10 @@
 public class DecreaseBlock : ActionBlock {
     public VariableBlock VariableBlock;
 
-    public override void ExecuteFunction() {
+    public override bool ExecuteFunction() {
         OutputValue = VariableBlock.GetOutputValue() - 1;
         VariableBlock.AssignOutputValue(OutputValue);
 
-        base.ExecuteFunction();
+        return base.ExecuteFunction();
     }
 }

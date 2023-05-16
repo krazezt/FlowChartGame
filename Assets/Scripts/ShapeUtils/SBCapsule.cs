@@ -4,8 +4,10 @@ using UnityEngine;
 public class SBCapsule : ShapeBehavior {
 
     [Header("Shape Attributes")]
+    [Range(0.1f, 10f)]
     public float width = 0.5f;
 
+    [Range(0.1f, 10f)]
     public float height = 0.5f;
 
     [Range(4, 100)]
@@ -56,7 +58,7 @@ public class SBCapsule : ShapeBehavior {
         lineRenderer.SetPositions(pointsPos);
     }
 
-    public override Vector3 CalculateIntersectPosition() {
+    public override Vector3 CalculateIntersectPosition(Vector3 connectPoint) {
         if (testLine != null) {
             testLine.positionCount = 2;
             testLine.SetPosition(0, connectPoint);
@@ -76,8 +78,7 @@ public class SBCapsule : ShapeBehavior {
             else
                 intersectPoint = transform.TransformPoint(Quaternion.Euler(0, 0, phi * 180 / Mathf.PI) * new Vector3(-distance, 0, 0));
 
-            if (intersectObj != null)
-                intersectObj.transform.position = intersectPoint;
+            UpdateIntersectObjPos();
         } else {
             Vector3 localPos = new() {
                 x = Mathf.Abs(height / (connectPoint.y - transform.position.y)) * (connectPoint.x - transform.position.x),
@@ -87,8 +88,7 @@ public class SBCapsule : ShapeBehavior {
 
             intersectPoint = transform.TransformPoint(localPos);
 
-            if (intersectObj != null)
-                intersectObj.transform.position = intersectPoint;
+            UpdateIntersectObjPos();
         }
 
         return intersectPoint;

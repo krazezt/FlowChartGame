@@ -1,14 +1,12 @@
-using UnityEngine;
-
 public class EndBlock : ActionBlock {
 
-    public override void ExecuteFunction() {
-        Debug.Log("EndBlock: " + gameObject.name);
+    public override bool ExecuteFunction() {
         GameManager.instance.AppendResultLinePoint(gameObject);
 
         if (CheckEndCondition()) {
-            Debug.Log("Win");
-        }
+            return true;
+        } else
+            return false;
     }
 
     protected virtual bool CheckEndCondition() {
