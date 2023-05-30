@@ -252,7 +252,7 @@ GameObject:
   - component: {fileID: 4864153317089767352}
   - component: {fileID: 6744460088207397271}
   m_Layer: 0
-  m_Name: ConditionBlock
+  m_Name: ConditionBlockGreater
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -411,14 +411,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shapeBehavior: {fileID: 0}
+  onDragging: 0
   state: 0
   OutputValue: 0
-  PrevBlock: {fileID: 0}
   TrueConditionBlock: {fileID: 0}
   FalseConditionBlock: {fileID: 0}
+  lineToTrue: {fileID: 0}
+  lineToFalse: {fileID: 0}
   LeftSideOperandBlock: {fileID: 0}
   RightSideOperandBlock: {fileID: 0}
-  operatorType: 0
+  operatorType: 1
 --- !u!114 &6744460088207397271
 MonoBehaviour:
   m_ObjectHideFlags: 0

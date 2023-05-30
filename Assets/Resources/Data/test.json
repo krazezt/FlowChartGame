@@ -1,0 +1,48 @@
+{
+  "Variables": [0, 0, 0],
+  "FunctionBlocks": [
+    {
+      "BlockTypeID": 0,
+      "Text": "Start",
+      "ConnectBlocks": [],
+      "NextBlocks": [4]
+    },
+    {
+      "BlockTypeID": 7,
+      "Text": "Input A, B",
+      "ConnectBlocks": [],
+      "NextBlocks": [5]
+    },
+    {
+      "BlockTypeID": 5,
+      "Text": "A > B",
+      "ConnectBlocks": [0, 1, 6, 7],
+      "NextBlocks": [6, 7]
+    },
+    {
+      "BlockTypeID": 1,
+      "Text": "Max = A",
+      "ConnectBlocks": [2, 0],
+      "NextBlocks": [8]
+    },
+    {
+      "BlockTypeID": 1,
+      "Text": "Max = B",
+      "ConnectBlocks": [2, 1],
+      "NextBlocks": [8]
+    },
+    {
+      "BlockTypeID": 7,
+      "Text": "Output Max",
+      "ConnectBlocks": [],
+      "NextBlocks": [9]
+    },
+    {
+      "BlockTypeID": 8,
+      "Text": "End",
+      "ConnectBlocks": [2, 0, 1],
+      "NextBlocks": []
+    }
+  ],
+  "TestCases": []
+}

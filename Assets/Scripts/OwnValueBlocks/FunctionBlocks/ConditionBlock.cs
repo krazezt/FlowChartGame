@@ -7,6 +7,7 @@ public class ConditionBlock : FunctionBlock {
         GREATER,
         LESS_OR_EQUAL,
         GREATER_OR_EQUAL,
+        EQUAL,
     }
 
     public FunctionBlock TrueConditionBlock;

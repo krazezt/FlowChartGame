@@ -39,7 +39,7 @@ public class ConnectLineController : MonoBehaviour {
         Vector3 offset1 = Quaternion.Euler(0, 0, phi1 * Mathf.Rad2Deg) * new Vector3(-arrowLength, 0, 0);
         Vector3 offset2 = Quaternion.Euler(0, 0, phi2 * Mathf.Rad2Deg) * new Vector3(-arrowLength, 0, 0);
 
-        if (pointer.x - startPoint.transform.position.x > 0) {
+        if (pointer.x - startPoint.transform.position.x >= 0) {
             lineRenderer.SetPosition(2, pointer + offset1);
             lineRenderer.SetPosition(3, pointer + offset2);
             lineRenderer.SetPosition(4, pointer);

@@ -65,7 +65,6 @@ public class AnimatedLineController : MonoBehaviour {
 
                 // animate all other points except point at index i
                 for (int j = i + 1; j < pointsCount; j++) {
-                    Debug.Log(j);
                     lineRenderer.SetPosition(j, pos);
                 }
 
