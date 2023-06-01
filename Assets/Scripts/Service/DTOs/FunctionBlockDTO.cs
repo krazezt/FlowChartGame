@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 [Serializable]
 public class FunctionBlockDTO {
-    public int BlockTypeID;
-    public string Text;
-    public List<int> ConnectBlocks;
-    public List<int> NextBlocks;
+    public int blockTypeID;                 // GameConfig.FunctionBlockType.
+    public string text;
+    public List<int> connectBlocks;         // Index in GameManager.ownValueBlocks.
+    public List<int> nextBlocks;            // Index in GameManager.ownValueBlocks.
 }

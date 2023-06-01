@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class AnimatedLineController : MonoBehaviour {
     public List<GameObject> linePoints;
+    public bool OnAnimating;
 
     private float segmentDuration;
     private LineRenderer lineRenderer;
@@ -14,10 +15,10 @@ public class AnimatedLineController : MonoBehaviour {
         segmentDuration = GameConfig.VISUALIZE_SEGMENT_DURATION;
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.enabled = false;
+        OnAnimating = false;
     }
 
     private void Update() {
-
         lineRenderer.SetPositions(linePoints.Select(point => point.transform.position).ToArray());
 
         if (Input.GetKeyDown(KeyCode.P))
@@ -49,6 +50,7 @@ public class AnimatedLineController : MonoBehaviour {
     }
 
     private IEnumerator AnimateLine() {
+        OnAnimating = true;
         pointsCount = linePoints.Count;
         //float segmentDuration = animationDurationOneEdge / pointsCount;
 
@@ -72,7 +74,8 @@ public class AnimatedLineController : MonoBehaviour {
             }
         }
 
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(1);
         lineRenderer.enabled = false;
+        OnAnimating = false;
     }
 }

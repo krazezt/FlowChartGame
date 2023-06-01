@@ -2,10 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
+using Z.Expressions;
 
 public class GameManager : MonoBehaviour {
     public static GameManager instance;
     public GameConfig.AppType appType;
+
+    public Image testCasesPanel;
 
     public AnimatedLineController resultDrawLine;
     public VirtualLine primaryVirtualLine;
@@ -21,6 +25,7 @@ public class GameManager : MonoBehaviour {
     public List<FunctionBlock> functionBlocks;
     public List<OwnValueBlock> ownValueBlocks;
     public List<TestCase> testCases;
+    public List<TestCase.CasePair> customCasePairs;
 
     public LevelDataDTO levelData;
 
@@ -35,11 +40,25 @@ public class GameManager : MonoBehaviour {
             Destroy(gameObject);
             return;
         }
+
+        List<int> list = new(){0, 1, 2, 3};
+        string funcContent = @"
+            int result = 0;
+            for (int i = 0; i < list.Count; i++) {
+                result += list[i];
+            }
+
+            return result;
+        ";
+
+        Debug.Log(Eval.Execute<int>(funcContent, new {
+            list
+        }));
     }
 
     private LevelDataDTO InitTestLevelData() {
-        levelData = gameObject.GetOrAddComponent<RWFile>().ReadFileData<LevelDataDTO>("Data/test");
-        Debug.Log(levelData.Variables.Count);
+        levelData = gameObject.GetOrAddComponent<RWFile>().ReadFileData<LevelDataDTO>("Data/UCLN_AB");
+        Debug.Log(levelData.variables.Count);
 
         return levelData;
     }
@@ -69,9 +88,9 @@ public class GameManager : MonoBehaviour {
     }
 
     public void InitLevel(LevelDataDTO levelData) {
-        InitVariables(levelData.Variables);
-        InitFunctionBlocks(levelData.FunctionBlocks);
-        InitTestCases(levelData.TestCases);
+        InitVariables(levelData.variables);
+        InitFunctionBlocks(levelData.functionBlocks);
+        InitTestCases(levelData.testCases);
     }
 
     public void InitVariables(List<int> variableIDs) {
@@ -83,74 +102,109 @@ public class GameManager : MonoBehaviour {
     }
 
     public void InitFunctionBlocks(List<FunctionBlockDTO> functionBlockDTOs) {
+        // Add blocks to the manage lists.
         foreach (FunctionBlockDTO functionBlockDTO in functionBlockDTOs) {
-            Debug.Log("BlockTypeID: " + functionBlockDTO.BlockTypeID + ", Count: " + functionBlockPrefabs.Count);
-            FunctionBlock block = Instantiate(functionBlockPrefabs[functionBlockDTO.BlockTypeID].gameObject).GetComponent<FunctionBlock>();
+            FunctionBlock block = Instantiate(functionBlockPrefabs[functionBlockDTO.blockTypeID].gameObject).GetComponent<FunctionBlock>();
+            block.SetLabel(functionBlockDTO.text);
             functionBlocks.Add(block);
             ownValueBlocks.Add(block);
         }
 
+        // Init values for the blocks
         for (int i = 0; i < functionBlockDTOs.Count; i++) {
-            switch ((GameConfig.FunctionBlockType)functionBlockDTOs[i].BlockTypeID) {
+            switch ((GameConfig.FunctionBlockType)functionBlockDTOs[i].blockTypeID) {
                 case GameConfig.FunctionBlockType.Start:
-                    (functionBlocks[i] as StartBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].NextBlocks[0]] as FunctionBlock;
+                    (functionBlocks[i] as StartBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
                     startBlock = (functionBlocks[i] as StartBlock);
                     break;
 
                 case GameConfig.FunctionBlockType.Action:
-                    (functionBlocks[i] as ActionBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].NextBlocks[0]] as FunctionBlock;
+                    (functionBlocks[i] as ActionBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.Assign:
-                    (functionBlocks[i] as AssignBlock).VariableBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[0]] as VariableBlock;
-                    (functionBlocks[i] as AssignBlock).ValueBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[1]];
-                    (functionBlocks[i] as AssignBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].NextBlocks[0]] as FunctionBlock;
+                    (functionBlocks[i] as AssignBlock).VariableBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]] as VariableBlock;
+                    (functionBlocks[i] as AssignBlock).ValueBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
+                    (functionBlocks[i] as AssignBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.ConditionEqual:
                     (functionBlocks[i] as ConditionBlock).operatorType = ConditionBlock.Operator.EQUAL;
-                    (functionBlocks[i] as ConditionBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[0]];
-                    (functionBlocks[i] as ConditionBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[1]];
-                    (functionBlocks[i] as ConditionBlock).TrueConditionBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[2]] as FunctionBlock;
-                    (functionBlocks[i] as ConditionBlock).FalseConditionBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[3]] as FunctionBlock;
+                    (functionBlocks[i] as ConditionBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
+                    (functionBlocks[i] as ConditionBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
+                    (functionBlocks[i] as ConditionBlock).TrueConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
+                    (functionBlocks[i] as ConditionBlock).FalseConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[1]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.ConditionLess:
                     (functionBlocks[i] as ConditionBlock).operatorType = ConditionBlock.Operator.LESS;
-                    (functionBlocks[i] as ConditionBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[0]];
-                    (functionBlocks[i] as ConditionBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[1]];
-                    (functionBlocks[i] as ConditionBlock).TrueConditionBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[2]] as FunctionBlock;
-                    (functionBlocks[i] as ConditionBlock).FalseConditionBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[3]] as FunctionBlock;
+                    (functionBlocks[i] as ConditionBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
+                    (functionBlocks[i] as ConditionBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
+                    (functionBlocks[i] as ConditionBlock).TrueConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
+                    (functionBlocks[i] as ConditionBlock).FalseConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[1]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.ConditionLessEqual:
                     (functionBlocks[i] as ConditionBlock).operatorType = ConditionBlock.Operator.LESS_OR_EQUAL;
-                    (functionBlocks[i] as ConditionBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[0]];
-                    (functionBlocks[i] as ConditionBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[1]];
-                    (functionBlocks[i] as ConditionBlock).TrueConditionBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[2]] as FunctionBlock;
-                    (functionBlocks[i] as ConditionBlock).FalseConditionBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[3]] as FunctionBlock;
+                    (functionBlocks[i] as ConditionBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
+                    (functionBlocks[i] as ConditionBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
+                    (functionBlocks[i] as ConditionBlock).TrueConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
+                    (functionBlocks[i] as ConditionBlock).FalseConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[1]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.ConditionGreater:
                     (functionBlocks[i] as ConditionBlock).operatorType = ConditionBlock.Operator.GREATER;
-                    (functionBlocks[i] as ConditionBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[0]];
-                    (functionBlocks[i] as ConditionBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[1]];
-                    (functionBlocks[i] as ConditionBlock).TrueConditionBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[2]] as FunctionBlock;
-                    (functionBlocks[i] as ConditionBlock).FalseConditionBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[3]] as FunctionBlock;
+                    (functionBlocks[i] as ConditionBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
+                    (functionBlocks[i] as ConditionBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
+                    (functionBlocks[i] as ConditionBlock).TrueConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
+                    (functionBlocks[i] as ConditionBlock).FalseConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[1]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.ConditionGreaterEqual:
                     (functionBlocks[i] as ConditionBlock).operatorType = ConditionBlock.Operator.GREATER_OR_EQUAL;
-                    (functionBlocks[i] as ConditionBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[0]];
-                    (functionBlocks[i] as ConditionBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[1]];
-                    (functionBlocks[i] as ConditionBlock).TrueConditionBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[2]] as FunctionBlock;
-                    (functionBlocks[i] as ConditionBlock).FalseConditionBlock = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[3]] as FunctionBlock;
+                    (functionBlocks[i] as ConditionBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
+                    (functionBlocks[i] as ConditionBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
+                    (functionBlocks[i] as ConditionBlock).TrueConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
+                    (functionBlocks[i] as ConditionBlock).FalseConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[1]] as FunctionBlock;
                     break;
 
-                case GameConfig.FunctionBlockType.EndMax:
-                    (functionBlocks[i] as EBMax).checkValue = ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[0]];
-                    for (int j = 1; j < functionBlockDTOs[i].ConnectBlocks.Count; j++) {
-                        (functionBlocks[i] as EBMax).inputValues.Add(ownValueBlocks[functionBlockDTOs[i].ConnectBlocks[j]]);
+                case GameConfig.FunctionBlockType.Add:
+                    (functionBlocks[i] as OperationBlock).operatorType = OperationBlock.Operator.ADD;
+                    (functionBlocks[i] as OperationBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
+                    (functionBlocks[i] as OperationBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
+                    (functionBlocks[i] as OperationBlock).OutputBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[2]] as VariableBlock;
+                    (functionBlocks[i] as OperationBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
+                    break;
+
+                case GameConfig.FunctionBlockType.Subtract:
+                    (functionBlocks[i] as OperationBlock).operatorType = OperationBlock.Operator.SUBTRACT;
+                    (functionBlocks[i] as OperationBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
+                    (functionBlocks[i] as OperationBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
+                    (functionBlocks[i] as OperationBlock).OutputBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[2]] as VariableBlock;
+                    (functionBlocks[i] as OperationBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
+                    break;
+
+                case GameConfig.FunctionBlockType.Multiply:
+                    (functionBlocks[i] as OperationBlock).operatorType = OperationBlock.Operator.MULTIPLY;
+                    (functionBlocks[i] as OperationBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
+                    (functionBlocks[i] as OperationBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
+                    (functionBlocks[i] as OperationBlock).OutputBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[2]] as VariableBlock;
+                    (functionBlocks[i] as OperationBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
+                    break;
+
+                case GameConfig.FunctionBlockType.Divide:
+                    (functionBlocks[i] as OperationBlock).operatorType = OperationBlock.Operator.DIVIDE;
+                    (functionBlocks[i] as OperationBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
+                    (functionBlocks[i] as OperationBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
+                    (functionBlocks[i] as OperationBlock).OutputBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[2]] as VariableBlock;
+                    (functionBlocks[i] as OperationBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
+                    break;
+
+                case GameConfig.FunctionBlockType.End:
+                    (functionBlocks[i] as EndBlock).checkValue = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
+                    (functionBlocks[i] as EndBlock).validateCode = levelData.validateCode;
+                    for (int j = 1; j < functionBlockDTOs[i].connectBlocks.Count; j++) {
+                        (functionBlocks[i] as EndBlock).inputValues.Add(ownValueBlocks[functionBlockDTOs[i].connectBlocks[j]]);
                     }
                     break;
             }
@@ -158,8 +212,36 @@ public class GameManager : MonoBehaviour {
     }
 
     public void InitTestCases(List<TestCaseDTO> testCaseDTOs) {
+        foreach (CasePairDTO pairDTO in testCaseDTOs[0].casePairs) {
+            customCasePairs.Add(new TestCase.CasePair() {
+                value = 0,
+                variableBlock = variableBlocks[pairDTO.variableBlockIndex],
+            });
+        }
+
+        int i = 0;
         foreach (TestCaseDTO testCaseDTO in testCaseDTOs) {
-            testCases.Add(Instantiate(testCasePrefabs[testCaseDTO.TestCaseTypeID].gameObject).GetComponent<TestCase>());
+            TestCase testCase = Instantiate(testCasePrefabs[testCaseDTO.testCaseTypeID].gameObject).GetComponent<TestCase>();
+
+            // Config
+            RectTransform rectTransform =  testCase.GetComponent<RectTransform>();
+            rectTransform.SetParent(testCasesPanel.GetComponent<RectTransform>());
+            rectTransform.anchoredPosition = new Vector3(120, 0, 0) + (i++) * 190 * new Vector3(1, 0, 0);
+            rectTransform.localScale = Vector3.one;
+            rectTransform.sizeDelta = 140 * Vector2.one;
+
+            testCase.SetLabel(testCaseDTO.text);
+            testCase.casePairs = new();
+            foreach (CasePairDTO casePairDTO in testCaseDTO.casePairs) {
+                TestCase.CasePair casePair = new() {
+                    value = casePairDTO.value,
+                    variableBlock = variableBlocks[casePairDTO.variableBlockIndex]
+                };
+
+                testCase.casePairs.Add(casePair);
+            }
+
+            testCases.Add(testCase);
         }
     }
 
@@ -192,6 +274,11 @@ public class GameManager : MonoBehaviour {
         StartCoroutine(TestAllCases());
     }
 
+    public void StartTestCustomCasse() {
+        resultDrawLine.Hide();
+        //StartCoroutine(TestAllCases());
+    }
+
     public IEnumerator TestAllCases() {
         bool isWin = true;
 
@@ -210,11 +297,13 @@ public class GameManager : MonoBehaviour {
             if (!passed) {
                 isWin = false;
                 resultDrawLine.StartAnimateLine();
-                yield return new WaitForSeconds(GameConfig.VISUALIZE_SEGMENT_DURATION * resultDrawLine.linePoints.Count - 1);
+                while (resultDrawLine.OnAnimating)
+                    yield return null;
                 testCase.MarkAsFailed();
             } else {
                 resultDrawLine.StartAnimateLine();
-                yield return new WaitForSeconds(GameConfig.VISUALIZE_SEGMENT_DURATION * resultDrawLine.linePoints.Count - 1);
+                while (resultDrawLine.OnAnimating)
+                    yield return null;
                 testCase.MarkAsPassed();
             }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 [Serializable]
 public class TestCaseDTO {
-    public string Text;
-    public int TestCaseTypeID;
-    public List<int> VariableIDs;
+    public int testCaseTypeID;
+    public string text;
+    public List<CasePairDTO> casePairs;
 }

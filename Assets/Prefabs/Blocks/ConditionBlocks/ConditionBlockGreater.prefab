@@ -338,11 +338,11 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: -0.7, y: 0.5, z: 0}
-  - {x: 1.3, y: 0.5, z: 0}
-  - {x: 0.7, y: -0.5, z: 0}
-  - {x: -1.3, y: -0.5, z: 0}
-  - {x: -0.7, y: 0.5, z: 0}
+  - {x: -1, y: 0, z: 0}
+  - {x: 0, y: 0.5, z: 0}
+  - {x: 1, y: 0, z: 0}
+  - {x: 0, y: -0.5, z: 0}
+  - {x: -1, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -411,6 +411,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shapeBehavior: {fileID: 0}
+  labelText: {fileID: 2828334284935469520}
   onDragging: 0
   state: 0
   OutputValue: 0
@@ -434,7 +435,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectObj: {fileID: 0}
-  lineRenderer: {fileID: 0}
+  lineRenderer: {fileID: 5612675260386146237}
   testLine: {fileID: 0}
   intersectObj: {fileID: 0}
   intersectPoint: {x: 0, y: 0, z: 0}

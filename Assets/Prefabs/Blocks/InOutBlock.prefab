@@ -431,9 +431,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shapeBehavior: {fileID: 0}
+  labelText: {fileID: 2828334284935469520}
   onDragging: 0
   state: 0
   OutputValue: 0
-  PrevBlock: {fileID: 0}
   NextBlock: {fileID: 0}
   lineToNext: {fileID: 0}

@@ -250,7 +250,7 @@ GameObject:
   - component: {fileID: 3383597923952521064}
   - component: {fileID: 4771574192452804769}
   - component: {fileID: 107614432528796043}
-  - component: {fileID: 1519974379}
+  - component: {fileID: 159969815809658880}
   m_Layer: 0
   m_Name: EndBlock
   m_TagString: Untagged
@@ -448,7 +448,7 @@ MonoBehaviour:
   width: 0.5
   height: 0.5
   pointsCount: 30
---- !u!114 &1519974379
+--- !u!114 &159969815809658880
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -457,16 +457,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 3383597923952521066}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cac39fd7a647eff45aaa7b12f9c2b113, type: 3}
+  m_Script: {fileID: 11500000, guid: d82cef1fb5891024cbb31b990a0d0298, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   shapeBehavior: {fileID: 0}
+  labelText: {fileID: 2828334284935469520}
   onDragging: 0
   state: 0
   OutputValue: 0
   NextBlock: {fileID: 0}
   lineToNext: {fileID: 0}
+  inputValues: []
   checkValue: {fileID: 0}
-  listValue:
-  - {fileID: 0}
-  - {fileID: 0}

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class CoreBlock : MonoBehaviour {
@@ -12,7 +13,9 @@ public class CoreBlock : MonoBehaviour {
 
     [SerializeField] protected ShapeBehavior shapeBehavior;
 
+    public TMP_Text labelText;
     [HideInInspector] public bool onDragging;
+
     private Vector3 offsetVector;
     private Vector3 firstPosition;
     private Vector3 firstTouchPosition;
@@ -88,6 +91,10 @@ public class CoreBlock : MonoBehaviour {
 
     private void OnMouseExit() {
         m_listConnection.Remove(this);
+    }
+
+    public void SetLabel(string label) {
+        labelText.text = label;
     }
 
     private void StartDrag() {

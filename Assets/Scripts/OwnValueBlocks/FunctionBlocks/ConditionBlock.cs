@@ -23,10 +23,13 @@ public class ConditionBlock : FunctionBlock {
     public override bool ExecuteFunction() {
         base.ExecuteFunction();
 
-        if (CheckCondition())
+        if (CheckCondition()) {
+            Debug.Log("True, " + operatorType + ", Left: " + LeftSideOperandBlock.GetOutputValue() + ", right: " + RightSideOperandBlock.GetOutputValue());
             TrueConditionBlock.ExecuteFunction();
-        else
+        } else {
+            Debug.Log("False, " + operatorType + ", Left: " + LeftSideOperandBlock.GetOutputValue() + ", right: " + RightSideOperandBlock.GetOutputValue());
             FalseConditionBlock.ExecuteFunction();
+        }
 
         return true;
     }
@@ -42,6 +45,9 @@ public class ConditionBlock : FunctionBlock {
 
     protected bool CheckCondition() {
         switch (operatorType) {
+            case Operator.EQUAL:
+                return LeftSideOperandBlock.GetOutputValue() == RightSideOperandBlock.GetOutputValue();
+
             case Operator.LESS:
                 return LeftSideOperandBlock.GetOutputValue() < RightSideOperandBlock.GetOutputValue();
 

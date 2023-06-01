@@ -13,17 +13,18 @@ public class GameConfig {
 
     public enum FunctionBlockType {
         Start,
-
         Assign,
         ConditionEqual,
         ConditionLess,
         ConditionLessEqual,
         ConditionGreater,
         ConditionGreaterEqual,
-
         Action,
-
-        EndMax,
+        Add,
+        Subtract,
+        Multiply,
+        Divide,
+        End,
     }
 
     public enum TestCaseType {

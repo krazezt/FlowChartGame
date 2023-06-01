@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,7 @@ public class TestCase : MonoBehaviour {
         public VariableBlock variableBlock;
     }
 
+    public TMP_Text labelText;
     public List<CasePair> casePairs;
 
     public enum State {
@@ -29,7 +31,6 @@ public class TestCase : MonoBehaviour {
     }
 
     public virtual void ResetState() {
-        Debug.Log(UIManager.instance.testCaseStateSprites.Count);
         image.sprite = UIManager.instance.testCaseStateSprites[(int)State.None];
         state = State.None;
     }
@@ -53,5 +54,9 @@ public class TestCase : MonoBehaviour {
         foreach (CasePair casePair in casePairs) {
             casePair.variableBlock.AssignOutputValue(casePair.value);
         }
+    }
+
+    public void SetLabel(string label) {
+        labelText.text = label;
     }
 }

@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class OperationBlock : ActionBlock {
 
     public enum Operator {
@@ -9,6 +11,7 @@ public class OperationBlock : ActionBlock {
 
     public OwnValueBlock LeftSideOperandBlock;
     public OwnValueBlock RightSideOperandBlock;
+    public VariableBlock OutputBlock;
     public Operator operatorType;
 
     public override bool ExecuteFunction() {
@@ -29,6 +32,9 @@ public class OperationBlock : ActionBlock {
                 OutputValue = LeftSideOperandBlock.GetOutputValue() / RightSideOperandBlock.GetOutputValue();
                 break;
         }
+        Debug.Log("left: " + LeftSideOperandBlock.GetOutputValue() + ", right: " + RightSideOperandBlock.GetOutputValue() + ", out: " + OutputValue);
+
+        OutputBlock.AssignOutputValue(OutputValue);
 
         return base.ExecuteFunction();
     }

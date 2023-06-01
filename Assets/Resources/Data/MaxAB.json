@@ -1,0 +1,66 @@
+{
+  "variables": [0, 0, 0],
+  "functionBlocks": [
+    {
+      "blockTypeID": 0,
+      "text": "Start",
+      "connectBlocks": [],
+      "nextBlocks": [4]
+    },
+    {
+      "blockTypeID": 7,
+      "text": "Input A, B",
+      "connectBlocks": [],
+      "nextBlocks": [5]
+    },
+    {
+      "blockTypeID": 5,
+      "text": "A > B",
+      "connectBlocks": [0, 1],
+      "nextBlocks": [6, 7]
+    },
+    {
+      "blockTypeID": 1,
+      "text": "Max = A",
+      "connectBlocks": [2, 0],
+      "nextBlocks": [8]
+    },
+    {
+      "blockTypeID": 1,
+      "text": "Max = B",
+      "connectBlocks": [2, 1],
+      "nextBlocks": [8]
+    },
+    {
+      "blockTypeID": 7,
+      "text": "Output Max",
+      "connectBlocks": [],
+      "nextBlocks": [9]
+    },
+    {
+      "blockTypeID": 12,
+      "text": "End",
+      "connectBlocks": [2, 0, 1],
+      "nextBlocks": []
+    }
+  ],
+  "testCases": [
+    {
+      "testCaseTypeID": 0,
+      "text": "A = 1\nB = 2",
+      "casePairs": [
+        { "value": 1, "variableBlockIndex": 0 },
+        { "value": 2, "variableBlockIndex": 1 }
+      ]
+    },
+    {
+      "testCaseTypeID": 0,
+      "text": "A = 5\nB = 2",
+      "casePairs": [
+        { "value": 5, "variableBlockIndex": 0 },
+        { "value": 2, "variableBlockIndex": 1 }
+      ]
+    }
+  ],
+  "validateCode": "int max = 0; foreach (OwnValueBlock item in inputValues) { if (max == 0) max = item.GetOutputValue(); if (item.GetOutputValue() > max) max = item.GetOutputValue(); } return checkValue.GetOutputValue() == max;"
+}

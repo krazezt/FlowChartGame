@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using UnityEngine;
+using Z.Expressions;
 
 public class EndBlock : ActionBlock {
 
@@ -7,6 +10,10 @@ public class EndBlock : ActionBlock {
 
     // The value to be check if it's value is equals to the "requiredValue"
     public OwnValueBlock checkValue;
+
+    // Content in the CheckEndCondition function, will be run in the EndBlock. Type & Params:
+    // (List<OwnValueBlock> list, OwnValueBlock checkValue) => bool
+    public string validateCode;
 
     public override bool ExecuteFunction() {
         GameManager.instance.AppendResultLinePoint(gameObject);
@@ -18,6 +25,9 @@ public class EndBlock : ActionBlock {
     }
 
     protected virtual bool CheckEndCondition() {
-        return false;
+        return Eval.Execute<bool>(validateCode, new {
+            inputValues,
+            checkValue,
+        });
     }
 }

@@ -3,7 +3,11 @@ using System.Collections.Generic;
 
 [Serializable]
 public class LevelDataDTO {
-    public List<int> Variables;
-    public List<FunctionBlockDTO> FunctionBlocks;
-    public List<TestCaseDTO> TestCases;
+    public List<int> variables;                     // GameConfig.VariableType
+    public List<FunctionBlockDTO> functionBlocks;   // StartBlock, EndBlock included
+    public List<TestCaseDTO> testCases;
+
+    // Content in the CheckEndCondition function, will be run in the EndBlock.
+    // Type & Params: (List<OwnValueBlock> inputValues, OwnValueBlock checkValue) => bool
+    public string validateCode;
 }
