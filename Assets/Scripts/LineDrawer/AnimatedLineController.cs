@@ -6,6 +6,7 @@ using UnityEngine;
 public class AnimatedLineController : MonoBehaviour {
     public List<GameObject> linePoints;
     public bool OnAnimating;
+    public GameObject processObject;
 
     private float segmentDuration;
     private LineRenderer lineRenderer;
@@ -50,6 +51,7 @@ public class AnimatedLineController : MonoBehaviour {
     }
 
     private IEnumerator AnimateLine() {
+        GameObject processObj = Instantiate(processObject);
         OnAnimating = true;
         pointsCount = linePoints.Count;
         //float segmentDuration = animationDurationOneEdge / pointsCount;
@@ -61,6 +63,7 @@ public class AnimatedLineController : MonoBehaviour {
             Vector3 endPosition = linePoints[i + 1].transform.position;
 
             Vector3 pos = startPosition;
+            GameManager.instance.DequeueVariableLog();
             while (pos != endPosition) {
                 float t = (Time.time - startTime) / segmentDuration;
                 pos = Vector3.Lerp(startPosition, endPosition, t);
@@ -69,6 +72,7 @@ public class AnimatedLineController : MonoBehaviour {
                 for (int j = i + 1; j < pointsCount; j++) {
                     lineRenderer.SetPosition(j, pos);
                 }
+                processObj.transform.position = pos;
 
                 yield return null;
             }
@@ -76,6 +80,7 @@ public class AnimatedLineController : MonoBehaviour {
 
         yield return new WaitForSeconds(1);
         lineRenderer.enabled = false;
+        Destroy(processObj);
         OnAnimating = false;
     }
 }

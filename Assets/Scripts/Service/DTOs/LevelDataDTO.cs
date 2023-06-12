@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 [Serializable]
 public class LevelDataDTO {
-    public List<int> variables;                     // GameConfig.VariableType
+    public List<VariableDTO> variables;                     // GameConfig.VariableType
     public List<FunctionBlockDTO> functionBlocks;   // StartBlock, EndBlock included
     public List<TestCaseDTO> testCases;
 

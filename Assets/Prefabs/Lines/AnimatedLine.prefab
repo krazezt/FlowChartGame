@@ -98,7 +98,7 @@ LineRenderer:
     colorGradient:
       serializedVersion: 2
       key0: {r: 1, g: 0.96862745, b: 0, a: 0}
-      key1: {r: 1, g: 0.96862745, b: 0, a: 0.6666667}
+      key1: {r: 1, g: 0.96862745, b: 0, a: 0}
       key2: {r: 0, g: 0, b: 0, a: 1}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -144,5 +144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 861483af18b11fe47b3812745dc619c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animationDuration: 2
   linePoints: []
+  OnAnimating: 0
+  processObject: {fileID: 3244375060030121736, guid: d43ce8cace8f71e49884c5657ffba74e,
+    type: 3}

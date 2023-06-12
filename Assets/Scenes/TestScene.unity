@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.00073307287, g: 0.004035685, b: 0.019824302, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -334,6 +334,82 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 188129947}
   m_CullTransparentMesh: 1
+--- !u!1 &190123608
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 190123609}
+  - component: {fileID: 190123611}
+  - component: {fileID: 190123610}
+  m_Layer: 5
+  m_Name: VariablesPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &190123609
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190123608}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1963296025}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -85.41, y: 703.34}
+  m_SizeDelta: {x: 170.8, y: -1766.66}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &190123610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190123608}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &190123611
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190123608}
+  m_CullTransparentMesh: 1
 --- !u!4 &330585546 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3076309450953525106, guid: 6633bc26d9215a4489521f74b73fa363,
@@ -371,13 +447,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   appType: 1
   testCasesPanel: {fileID: 188129949}
+  variablesPanel: {fileID: 190123610}
   resultDrawLine: {fileID: 2018936423}
   primaryVirtualLine: {fileID: 1068501754}
   secondaryVirtualLine: {fileID: 1321639391}
   primaryConnectLine: {fileID: 536766187}
   secondaryConnectLine: {fileID: 1813612408}
   variableBlockPrefabs:
-  - {fileID: 7049067337926326893, guid: 1f3c48e735601b344ad7914168688d64, type: 3}
+  - {fileID: 1907295988764540668, guid: 38c31d775351e5c4d8bf5b2f0c0d1cad, type: 3}
   functionBlockPrefabs:
   - {fileID: 7678955302982612009, guid: f4a06b12b73488949bc0b77f3db77c2d, type: 3}
   - {fileID: 263017537, guid: ff638a130884f604198d42f6f95e9414, type: 3}
@@ -398,8 +475,9 @@ MonoBehaviour:
   functionBlocks: []
   ownValueBlocks: []
   testCases: []
+  customCasePairs: []
   levelData:
-    variables: 
+    variables: []
     functionBlocks: []
     testCases: []
     validateCode: 
@@ -676,11 +754,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1784630375}
     m_Modifications:
-    - target: {fileID: 184669278873106404, guid: 0a4cb3464aae49e40b498a7050e8f41e,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 184669278873106406, guid: 0a4cb3464aae49e40b498a7050e8f41e,
         type: 3}
       propertyPath: m_Name
@@ -1693,41 +1766,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1784630375}
     m_Modifications:
-    - target: {fileID: 184669278873106404, guid: 0a4cb3464aae49e40b498a7050e8f41e,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 184669278873106404, guid: 0a4cb3464aae49e40b498a7050e8f41e,
-        type: 3}
-      propertyPath: m_Parameters.colorGradient.key0.b
-      value: 0.037246227
-      objectReference: {fileID: 0}
-    - target: {fileID: 184669278873106404, guid: 0a4cb3464aae49e40b498a7050e8f41e,
-        type: 3}
-      propertyPath: m_Parameters.colorGradient.key0.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 184669278873106404, guid: 0a4cb3464aae49e40b498a7050e8f41e,
-        type: 3}
-      propertyPath: m_Parameters.colorGradient.key0.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 184669278873106404, guid: 0a4cb3464aae49e40b498a7050e8f41e,
-        type: 3}
-      propertyPath: m_Parameters.colorGradient.key1.b
-      value: 0.14508247
-      objectReference: {fileID: 0}
-    - target: {fileID: 184669278873106404, guid: 0a4cb3464aae49e40b498a7050e8f41e,
-        type: 3}
-      propertyPath: m_Parameters.colorGradient.key1.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 184669278873106404, guid: 0a4cb3464aae49e40b498a7050e8f41e,
-        type: 3}
-      propertyPath: m_Parameters.colorGradient.key1.r
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 184669278873106406, guid: 0a4cb3464aae49e40b498a7050e8f41e,
         type: 3}
       propertyPath: m_Name
@@ -1904,6 +1942,7 @@ RectTransform:
   - {fileID: 942080849}
   - {fileID: 1689814372}
   - {fileID: 928885087}
+  - {fileID: 190123609}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

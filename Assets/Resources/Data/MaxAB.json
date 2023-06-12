@@ -1,47 +1,53 @@
 {
-  "variables": [0, 0, 0],
+  "variables": [
+    {
+      "variableTypeID": 0,
+      "variableName": "A"
+    },
+    {
+      "variableTypeID": 0,
+      "variableName": "B"
+    },
+    {
+      "variableTypeID": 0,
+      "variableName": "Max"
+    }
+  ],
   "functionBlocks": [
     {
       "blockTypeID": 0,
       "text": "Start",
-      "connectBlocks": [],
-      "nextBlocks": [4]
+      "connectBlocks": []
     },
     {
       "blockTypeID": 7,
       "text": "Input A, B",
-      "connectBlocks": [],
-      "nextBlocks": [5]
+      "connectBlocks": []
     },
     {
       "blockTypeID": 5,
       "text": "A > B",
-      "connectBlocks": [0, 1],
-      "nextBlocks": [6, 7]
+      "connectBlocks": [0, 1]
     },
     {
       "blockTypeID": 1,
       "text": "Max = A",
-      "connectBlocks": [2, 0],
-      "nextBlocks": [8]
+      "connectBlocks": [2, 0]
     },
     {
       "blockTypeID": 1,
       "text": "Max = B",
-      "connectBlocks": [2, 1],
-      "nextBlocks": [8]
+      "connectBlocks": [2, 1]
     },
     {
       "blockTypeID": 7,
       "text": "Output Max",
-      "connectBlocks": [],
-      "nextBlocks": [9]
+      "connectBlocks": []
     },
     {
       "blockTypeID": 12,
       "text": "End",
-      "connectBlocks": [2, 0, 1],
-      "nextBlocks": []
+      "connectBlocks": [2, 0, 1]
     }
   ],
   "testCases": [
