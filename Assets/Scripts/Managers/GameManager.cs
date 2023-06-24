@@ -50,6 +50,8 @@ public class GameManager : MonoBehaviour {
         }
 
         variableLog = new();
+
+        Application.targetFrameRate = 60;
     }
 
     private LevelDataDTO InitTestLevelData() {
@@ -233,7 +235,8 @@ public class GameManager : MonoBehaviour {
                     (functionBlocks[i] as OperationBlock).OutputBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[2]] as VariableBlock;
                     break;
 
-                case GameConfig.FunctionBlockType.End:
+                case GameConfig.FunctionBlockType.EBMax:
+                case GameConfig.FunctionBlockType.EBUCLN:
                     (functionBlocks[i] as EndBlock).checkValue = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
                     (functionBlocks[i] as EndBlock).validateCode = levelData.validateCode;
                     for (int j = 1; j < functionBlockDTOs[i].connectBlocks.Count; j++) {
