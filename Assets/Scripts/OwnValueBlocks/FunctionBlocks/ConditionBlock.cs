@@ -67,11 +67,11 @@ public class ConditionBlock : FunctionBlock {
 
     protected override void StartConnect() {
         if (TrueConditionBlock == null)
-            GameManager.instance.ShowPrimaryVirtualLine(shapeBehavior.CalculateIntersectPosition(MouseWorldPosition()));
+            GameManager.instance.ShowPrimaryVirtualLine(gameObject, true);
         else if (FalseConditionBlock == null)
-            GameManager.instance.ShowSecondaryVirtualLine(shapeBehavior.CalculateIntersectPosition(MouseWorldPosition()));
+            GameManager.instance.ShowSecondaryVirtualLine(gameObject, true);
         else
-            GameManager.instance.ShowPrimaryVirtualLine(shapeBehavior.CalculateIntersectPosition(MouseWorldPosition()));
+            GameManager.instance.ShowPrimaryVirtualLine(gameObject, true);
 
         state = State.Connect;
     }
@@ -106,7 +106,7 @@ public class ConditionBlock : FunctionBlock {
 
         if (lineToTrue != null)
             Destroy(lineToTrue.gameObject);
-        lineToTrue = GameManager.instance.CreateConnectPrimary(this, TrueConditionBlock);
+        lineToTrue = GameManager.instance.CreateConnectPrimary(this, TrueConditionBlock, true);
     }
 
     private void SetFalseConnection(GameObject obj) {
@@ -123,6 +123,6 @@ public class ConditionBlock : FunctionBlock {
 
         if (lineToFalse != null)
             Destroy(lineToFalse.gameObject);
-        lineToFalse = GameManager.instance.CreateConnectSecondary(this, FalseConditionBlock);
+        lineToFalse = GameManager.instance.CreateConnectSecondary(this, FalseConditionBlock, true);
     }
 }

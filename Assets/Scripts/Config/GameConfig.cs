@@ -1,3 +1,5 @@
+using System.Numerics;
+
 public class GameConfig {
 
     public enum AppType {
@@ -41,4 +43,7 @@ public class GameConfig {
     public const float POPUP_START_SCALE = 0.7f;
     public const float POPUP_DURATION = 0.3f;
     public const float BACKDROP_FADE_ALPHA = 0.9f;
+    public const float VARIABLE_PANEL_SEGMENT_HEIGHT = 180f;
+    public const float VARIABLE_PANEL_WIDTH = 170f;
+    public static readonly Vector2 VARIABLE_SIZE = new(150, 165);
 }

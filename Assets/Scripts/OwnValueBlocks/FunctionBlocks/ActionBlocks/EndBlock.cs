@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
-using Z.Expressions;
 
 public class EndBlock : ActionBlock {
 
@@ -25,9 +22,6 @@ public class EndBlock : ActionBlock {
     }
 
     protected virtual bool CheckEndCondition() {
-        return Eval.Execute<bool>(validateCode, new {
-            inputValues,
-            checkValue,
-        });
+        return true;
     }
 }

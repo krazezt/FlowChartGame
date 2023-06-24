@@ -1,6 +1,5 @@
-using System.Collections.Generic;
-
 public class EBMax : EndBlock {
+
     protected override bool CheckEndCondition() {
         int max = 0;
 

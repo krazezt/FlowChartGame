@@ -1,16 +1,15 @@
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class ConnectLineController : MonoBehaviour {
     public GameObject startPoint;
     public GameObject endPoint;
     public float arrowPhi = 15;
     public float arrowLength = 0.1f;
-    public string title;
+    public GameObject labelText;
 
     private const int POINT_COUNT = 5;
 
-    private LineRenderer lineRenderer;
+    protected LineRenderer lineRenderer;
 
     private void Start() {
         lineRenderer = GetComponent<LineRenderer>();
@@ -27,11 +26,13 @@ public class ConnectLineController : MonoBehaviour {
         lineRenderer.positionCount = POINT_COUNT;
         lineRenderer.SetPosition(0, startPoint.GetComponent<ShapeBehavior>().CalculateIntersectPosition(endPoint.transform.position));
         lineRenderer.SetPosition(1, endPoint.GetComponent<ShapeBehavior>().CalculateIntersectPosition(startPoint.transform.position));
+        if (labelText.activeSelf)
+            labelText.transform.position = Vector3.Lerp(startPoint.transform.position, endPoint.transform.position, 0.5f);
 
         DrawArrow(endPoint.GetComponent<ShapeBehavior>().CalculateIntersectPosition(startPoint.transform.position));
     }
 
-    private void DrawArrow(Vector3 pointer) {
+    protected void DrawArrow(Vector3 pointer) {
         float phi = Mathf.Atan((pointer.y - startPoint.transform.position.y) / (pointer.x - startPoint.transform.position.x));
         float phi1 = phi + arrowPhi * Mathf.Deg2Rad;
         float phi2 = phi - arrowPhi * Mathf.Deg2Rad;

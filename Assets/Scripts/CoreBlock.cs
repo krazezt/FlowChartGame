@@ -121,13 +121,13 @@ public class CoreBlock : MonoBehaviour {
     }
 
     protected virtual void StartConnect() {
-        GameManager.instance.ShowPrimaryVirtualLine(shapeBehavior.CalculateIntersectPosition(MouseWorldPosition()));
+        GameManager.instance.ShowPrimaryVirtualLine(gameObject);
 
         state = State.Connect;
     }
 
     private void Connect() {
-        GameManager.instance.primaryVirtualLine.SetStartPoint(shapeBehavior.CalculateIntersectPosition(MouseWorldPosition()));
+        GameManager.instance.primaryVirtualLine.SetStartPoint(gameObject);
     }
 
     protected virtual bool EndConnect() {

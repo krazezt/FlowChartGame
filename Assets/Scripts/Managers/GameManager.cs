@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static TestCase;
 
 public class GameManager : MonoBehaviour {
     public static GameManager instance;
     public GameConfig.AppType appType;
 
     public Image testCasesPanel;
-    public Image variablesPanel;
+    public VariablesPanel variablesPanel;
+    public GameObject blocksHolder;
 
     public AnimatedLineController resultDrawLine;
     public VirtualLine primaryVirtualLine;
@@ -25,8 +28,11 @@ public class GameManager : MonoBehaviour {
     public List<FunctionBlock> functionBlocks;
     public List<OwnValueBlock> ownValueBlocks;
     public List<TestCase> testCases;
-    public List<TestCase.CasePair> customCasePairs;
+    public List<CasePair> customCasePairs;
 
+    public int generateGridWidth = 3;
+    public int generateGridHeight = 3;
+    public const float GRID_CELL_SIZE = 2.5f;
     public LevelDataDTO levelData;
 
     [Header("Testing")]
@@ -44,25 +50,10 @@ public class GameManager : MonoBehaviour {
         }
 
         variableLog = new();
-
-        //List<int> list = new(){0, 1, 2, 3};
-        //string funcContent = @"
-        //    int result = 0;
-        //    for (int i = 0; i < list.Count; i++) {
-        //        result += list[i];
-        //    }
-
-        //    return result;
-        //";
-
-        //Debug.Log(Eval.Execute<int>(funcContent, new {
-        //    list
-        //}));
     }
 
     private LevelDataDTO InitTestLevelData() {
         levelData = gameObject.GetOrAddComponent<RWFile>().ReadFileData<LevelDataDTO>("Data/UCLN_AB");
-        Debug.Log(levelData.variables.Count);
 
         return levelData;
     }
@@ -72,14 +63,24 @@ public class GameManager : MonoBehaviour {
         InitLevel(levelData);
     }
 
-    public void ShowPrimaryVirtualLine(Vector3 startPoint) {
+    public void ShowPrimaryVirtualLine(GameObject startPoint, bool displayLabel = false) {
         primaryVirtualLine.SetStartPoint(startPoint);
-        primaryVirtualLine.Show();
+        primaryVirtualLine.Show(displayLabel);
     }
 
-    public void ShowSecondaryVirtualLine(Vector3 startPoint) {
+    public void ShowSecondaryVirtualLine(GameObject startPoint, bool displayLabel = false) {
         secondaryVirtualLine.SetStartPoint(startPoint);
-        secondaryVirtualLine.Show();
+        secondaryVirtualLine.Show(displayLabel);
+    }
+
+    public void UpdateCustomCasePairValues() {
+        foreach (var pair in customCasePairs) {
+            try {
+                pair.value = int.Parse(pair.variableBlock.valueText.text);
+            } catch {
+                pair.value = 0;
+            }
+        }
     }
 
     public void HideVirtualLine() {
@@ -113,6 +114,18 @@ public class GameManager : MonoBehaviour {
         InitVariables(levelData.variables);
         InitFunctionBlocks(levelData.functionBlocks);
         InitTestCases(levelData.testCases);
+
+        variablesPanel.SetVariables(variableBlocks, (customCasePairs.Select((ele) => ele.variableBlock)).ToList());
+        variablesPanel.Hide();
+    }
+
+    public Vector3 GetInitPosition(int index) {
+        Vector2 coord = new() {
+            x = index % generateGridWidth,
+            y = index / generateGridHeight,
+        };
+
+        return new(-GRID_CELL_SIZE + coord.x * GRID_CELL_SIZE, GRID_CELL_SIZE - coord.y * GRID_CELL_SIZE, 0);
     }
 
     public void InitVariables(List<VariableDTO> variables) {
@@ -137,9 +150,12 @@ public class GameManager : MonoBehaviour {
 
     public void InitFunctionBlocks(List<FunctionBlockDTO> functionBlockDTOs) {
         // Add blocks to the manage lists.
+        int index = 0;
         foreach (FunctionBlockDTO functionBlockDTO in functionBlockDTOs) {
             FunctionBlock block = Instantiate(functionBlockPrefabs[functionBlockDTO.blockTypeID].gameObject).GetComponent<FunctionBlock>();
             block.SetLabel(functionBlockDTO.text);
+            block.transform.parent = blocksHolder.transform;
+            block.transform.position = GetInitPosition(index++);
             functionBlocks.Add(block);
             ownValueBlocks.Add(block);
         }
@@ -148,58 +164,45 @@ public class GameManager : MonoBehaviour {
         for (int i = 0; i < functionBlockDTOs.Count; i++) {
             switch ((GameConfig.FunctionBlockType)functionBlockDTOs[i].blockTypeID) {
                 case GameConfig.FunctionBlockType.Start:
-                    //(functionBlocks[i] as StartBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
                     startBlock = (functionBlocks[i] as StartBlock);
                     break;
 
                 case GameConfig.FunctionBlockType.Action:
-                    //(functionBlocks[i] as ActionBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.Assign:
                     (functionBlocks[i] as AssignBlock).VariableBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]] as VariableBlock;
                     (functionBlocks[i] as AssignBlock).ValueBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
-                    //(functionBlocks[i] as AssignBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.ConditionEqual:
                     (functionBlocks[i] as ConditionBlock).operatorType = ConditionBlock.Operator.EQUAL;
                     (functionBlocks[i] as ConditionBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
                     (functionBlocks[i] as ConditionBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
-                    //(functionBlocks[i] as ConditionBlock).TrueConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
-                    //(functionBlocks[i] as ConditionBlock).FalseConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[1]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.ConditionLess:
                     (functionBlocks[i] as ConditionBlock).operatorType = ConditionBlock.Operator.LESS;
                     (functionBlocks[i] as ConditionBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
                     (functionBlocks[i] as ConditionBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
-                    //(functionBlocks[i] as ConditionBlock).TrueConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
-                    //(functionBlocks[i] as ConditionBlock).FalseConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[1]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.ConditionLessEqual:
                     (functionBlocks[i] as ConditionBlock).operatorType = ConditionBlock.Operator.LESS_OR_EQUAL;
                     (functionBlocks[i] as ConditionBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
                     (functionBlocks[i] as ConditionBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
-                    //(functionBlocks[i] as ConditionBlock).TrueConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
-                    //(functionBlocks[i] as ConditionBlock).FalseConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[1]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.ConditionGreater:
                     (functionBlocks[i] as ConditionBlock).operatorType = ConditionBlock.Operator.GREATER;
                     (functionBlocks[i] as ConditionBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
                     (functionBlocks[i] as ConditionBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
-                    //(functionBlocks[i] as ConditionBlock).TrueConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
-                    //(functionBlocks[i] as ConditionBlock).FalseConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[1]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.ConditionGreaterEqual:
                     (functionBlocks[i] as ConditionBlock).operatorType = ConditionBlock.Operator.GREATER_OR_EQUAL;
                     (functionBlocks[i] as ConditionBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
                     (functionBlocks[i] as ConditionBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
-                    //(functionBlocks[i] as ConditionBlock).TrueConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
-                    //(functionBlocks[i] as ConditionBlock).FalseConditionBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[1]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.Add:
@@ -207,7 +210,6 @@ public class GameManager : MonoBehaviour {
                     (functionBlocks[i] as OperationBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
                     (functionBlocks[i] as OperationBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
                     (functionBlocks[i] as OperationBlock).OutputBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[2]] as VariableBlock;
-                    //(functionBlocks[i] as OperationBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.Subtract:
@@ -215,7 +217,6 @@ public class GameManager : MonoBehaviour {
                     (functionBlocks[i] as OperationBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
                     (functionBlocks[i] as OperationBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
                     (functionBlocks[i] as OperationBlock).OutputBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[2]] as VariableBlock;
-                    //(functionBlocks[i] as OperationBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.Multiply:
@@ -223,7 +224,6 @@ public class GameManager : MonoBehaviour {
                     (functionBlocks[i] as OperationBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
                     (functionBlocks[i] as OperationBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
                     (functionBlocks[i] as OperationBlock).OutputBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[2]] as VariableBlock;
-                    //(functionBlocks[i] as OperationBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.Divide:
@@ -231,7 +231,6 @@ public class GameManager : MonoBehaviour {
                     (functionBlocks[i] as OperationBlock).LeftSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
                     (functionBlocks[i] as OperationBlock).RightSideOperandBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[1]];
                     (functionBlocks[i] as OperationBlock).OutputBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[2]] as VariableBlock;
-                    //(functionBlocks[i] as OperationBlock).NextBlock = ownValueBlocks[functionBlockDTOs[i].nextBlocks[0]] as FunctionBlock;
                     break;
 
                 case GameConfig.FunctionBlockType.End:
@@ -247,7 +246,7 @@ public class GameManager : MonoBehaviour {
 
     public void InitTestCases(List<TestCaseDTO> testCaseDTOs) {
         foreach (CasePairDTO pairDTO in testCaseDTOs[0].casePairs) {
-            customCasePairs.Add(new TestCase.CasePair() {
+            customCasePairs.Add(new CasePair() {
                 value = 0,
                 variableBlock = variableBlocks[pairDTO.variableBlockIndex],
             });
@@ -267,7 +266,7 @@ public class GameManager : MonoBehaviour {
             testCase.SetLabel(testCaseDTO.text);
             testCase.casePairs = new();
             foreach (CasePairDTO casePairDTO in testCaseDTO.casePairs) {
-                TestCase.CasePair casePair = new() {
+                CasePair casePair = new() {
                     value = casePairDTO.value,
                     variableBlock = variableBlocks[casePairDTO.variableBlockIndex]
                 };
@@ -284,40 +283,84 @@ public class GameManager : MonoBehaviour {
         variableLog.Clear();
     }
 
-    public ConnectLineController CreateConnectPrimary(FunctionBlock from, FunctionBlock to) {
+    public ConnectLineController CreateConnectPrimary(FunctionBlock from, FunctionBlock to, bool displayLabel = false) {
         GameObject newLine = Instantiate(primaryConnectLine.gameObject);
 
         newLine.GetComponent<ConnectLineController>().startPoint = from.gameObject;
         newLine.GetComponent<ConnectLineController>().endPoint = to.gameObject;
+        newLine.GetComponent<ConnectLineController>().labelText.SetActive(displayLabel);
 
         HideVirtualLine();
         return newLine.GetComponent<ConnectLineController>();
     }
 
-    public ConnectLineController CreateConnectSecondary(FunctionBlock from, FunctionBlock to) {
+    public ConnectLineController CreateConnectSecondary(FunctionBlock from, FunctionBlock to, bool displayLabel = false) {
         GameObject newLine = Instantiate(secondaryConnectLine.gameObject);
 
         newLine.GetComponent<ConnectLineController>().startPoint = from.gameObject;
         newLine.GetComponent<ConnectLineController>().endPoint = to.gameObject;
+        newLine.GetComponent<ConnectLineController>().labelText.SetActive(displayLabel);
 
         HideVirtualLine();
         return newLine.GetComponent<ConnectLineController>();
     }
 
-    public void StartTestAllCases() {
+    public void StartTest() {
+        switch (variablesPanel.CurrentState) {
+            case VariablesPanel.State.ShowingCustomables:
+                StartTestCustomCase();
+                break;
+
+            default:
+                StartTestAllCases();
+                break;
+        }
+    }
+
+    private void StartTestAllCases() {
         resultDrawLine.Hide();
+        variablesPanel.Show(VariablesPanel.State.ShowingAll);
         StartCoroutine(TestAllCases());
     }
 
-    public void StartTestCustomCasse() {
+    private void StartTestCustomCase() {
         resultDrawLine.Hide();
-        //StartCoroutine(TestAllCases());
+        variablesPanel.Show(VariablesPanel.State.ShowingAll);
+        foreach (CasePair casePair in customCasePairs) {
+            casePair.variableBlock.AssignOutputValue(casePair.value);
+        }
+
+        StartCoroutine(TestCustomCasePair());
     }
 
-    public IEnumerator TestAllCases() {
+    private IEnumerator TestCustomCasePair() {
+        bool passed;
+        try {
+            passed = startBlock.ExecuteFunction();
+        } catch {
+            passed = false;
+        }
+
+        if (!passed) {
+            resultDrawLine.StartAnimateLine();
+            while (resultDrawLine.OnAnimating)
+                yield return null;
+        } else {
+            resultDrawLine.StartAnimateLine();
+            while (resultDrawLine.OnAnimating)
+                yield return null;
+        }
+
+        yield return new WaitForSeconds(GameConfig.VISUALIZE_GAP_RESULT_DURATION);
+        variablesPanel.ResetVariables();
+        variablesPanel.Hide();
+    }
+
+    private IEnumerator TestAllCases() {
         bool isWin = true;
 
         foreach (var testCase in testCases) {
+            variablesPanel.ResetVariables();
             testCase.SetupTestCase();
             testCase.MarkAsChecking();
 
@@ -345,13 +388,15 @@ public class GameManager : MonoBehaviour {
             yield return new WaitForSeconds(GameConfig.VISUALIZE_GAP_SEGMENT_DURATION);
         }
 
-        if (isWin)
+        if (isWin) {
+            variablesPanel.Hide();
             UIManager.instance.ShowPopupDelay(UIManager.Popup.Win, 1f);
-        else {
+        } else {
             Debug.Log("Opps, try again");
 
             yield return new WaitForSeconds(GameConfig.VISUALIZE_GAP_RESULT_DURATION);
 
+            variablesPanel.Hide();
             foreach (var testCase in testCases)
                 testCase.ResetState();
         }

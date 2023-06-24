@@ -58,7 +58,7 @@
     },
     {
       "id": 10,
-      "blockTypeID": 12,
+      "blockTypeID": 13,
       "text": "End",
       "connectBlocks": [ 2, 0, 1 ]
     }
