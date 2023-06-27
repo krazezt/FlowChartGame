@@ -17,6 +17,8 @@ public class VariablesPanel : MonoBehaviour {
     public State CurrentState;
 
     private void Awake() {
+        variables = new();
+        customableVariables = new();
         rectTransform = GetComponent<RectTransform>();
     }
 
@@ -49,6 +51,11 @@ public class VariablesPanel : MonoBehaviour {
             variable.AssignOutputValue(0);
             variable.DisplayValue();
         }
+    }
+
+    public void ClearVariables() {
+        variables.Clear();
+        customableVariables.Clear();
     }
 
     private void SetState(State state) {

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour {
     public static UIManager instance;
@@ -16,6 +17,7 @@ public class UIManager : MonoBehaviour {
 
     public CanvasGroup backdrop;
     public PopupBase[] popups;
+    public Button customCasePairButton;
 
     public List<Sprite> testCaseStateSprites;
 
@@ -66,5 +68,17 @@ public class UIManager : MonoBehaviour {
         });
         foreach (PopupBase popup in popups)
             popup.Hide();
+    }
+
+    public void OnStartSimulate() {
+        customCasePairButton.interactable = false;
+    }
+
+    public void OnStopSimulate() {
+        customCasePairButton.interactable = true;
+    }
+
+    public void LoadNextLevel() {
+        GameManager.instance.LoadNextLevel();
     }
 }

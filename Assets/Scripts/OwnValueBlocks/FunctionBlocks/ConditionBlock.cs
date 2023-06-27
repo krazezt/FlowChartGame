@@ -66,6 +66,9 @@ public class ConditionBlock : FunctionBlock {
     }
 
     protected override void StartConnect() {
+        if (GameManager.instance.gameplayState != GameConfig.GameplayState.Playing)
+            return;
+
         if (TrueConditionBlock == null)
             GameManager.instance.ShowPrimaryVirtualLine(gameObject, true);
         else if (FalseConditionBlock == null)

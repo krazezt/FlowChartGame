@@ -13,6 +13,11 @@ public class GameConfig {
         Array
     }
 
+    public enum GameplayState {
+        Playing,
+        Simulating
+    }
+
     public enum FunctionBlockType {
         Start,
         Assign,

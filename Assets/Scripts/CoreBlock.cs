@@ -121,6 +121,9 @@ public class CoreBlock : MonoBehaviour {
     }
 
     protected virtual void StartConnect() {
+        if (GameManager.instance.gameplayState != GameConfig.GameplayState.Playing)
+            return;
+
         GameManager.instance.ShowPrimaryVirtualLine(gameObject);
 
         state = State.Connect;

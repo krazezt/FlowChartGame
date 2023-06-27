@@ -9,6 +9,8 @@ using static TestCase;
 public class GameManager : MonoBehaviour {
     public static GameManager instance;
     public GameConfig.AppType appType;
+    public GameConfig.GameplayState gameplayState;
+    public int currentLevel;
 
     public Image testCasesPanel;
     public VariablesPanel variablesPanel;
@@ -29,6 +31,7 @@ public class GameManager : MonoBehaviour {
     public List<OwnValueBlock> ownValueBlocks;
     public List<TestCase> testCases;
     public List<CasePair> customCasePairs;
+    public List<ConnectLineController> connectLines;
 
     public int generateGridWidth = 3;
     public int generateGridHeight = 3;
@@ -50,19 +53,52 @@ public class GameManager : MonoBehaviour {
         }
 
         variableLog = new();
+        connectLines = new();
 
         Application.targetFrameRate = 60;
     }
 
-    private LevelDataDTO InitTestLevelData() {
-        levelData = gameObject.GetOrAddComponent<RWFile>().ReadFileData<LevelDataDTO>("Data/UCLN_AB");
+    private void LoadLevel(int level) {
+        ClearLevel();
+        levelData = gameObject.GetOrAddComponent<RWFile>().ReadFileData<LevelDataDTO>("Data/" + level);
+        currentLevel = level;
+        InitLevel(levelData);
+    }
 
-        return levelData;
+    private void ClearLevel() {
+        ClearResultPoint();
+        variablesPanel.ClearVariables();
+        customCasePairs.Clear();
+
+        foreach (var testcase in testCases)
+            Destroy(testcase.gameObject);
+        testCases.Clear();
+
+        foreach (var line in connectLines)
+            Destroy(line.gameObject);
+        connectLines.Clear();
+
+        foreach (var block in variableBlocks)
+            Destroy(block.gameObject);
+        variableBlocks.Clear();
+
+        foreach (var block in functionBlocks)
+            Destroy(block.gameObject);
+
+        functionBlocks.Clear();
+
+        foreach (var block in ownValueBlocks)
+            Destroy(block.gameObject);
+
+        ownValueBlocks.Clear();
+    }
+
+    public void LoadNextLevel() {
+        LoadLevel(currentLevel + 1);
     }
 
     private void Start() {
-        InitTestLevelData();
-        InitLevel(levelData);
+        LoadLevel(1);
     }
 
     public void ShowPrimaryVirtualLine(GameObject startPoint, bool displayLabel = false) {
@@ -119,6 +155,9 @@ public class GameManager : MonoBehaviour {
 
         variablesPanel.SetVariables(variableBlocks, (customCasePairs.Select((ele) => ele.variableBlock)).ToList());
         variablesPanel.Hide();
+
+        UIManager.instance.OnStopSimulate();
+        gameplayState = GameConfig.GameplayState.Playing;
     }
 
     public Vector3 GetInitPosition(int index) {
@@ -287,25 +326,27 @@ public class GameManager : MonoBehaviour {
     }
 
     public ConnectLineController CreateConnectPrimary(FunctionBlock from, FunctionBlock to, bool displayLabel = false) {
-        GameObject newLine = Instantiate(primaryConnectLine.gameObject);
+        ConnectLineController newLine = Instantiate(primaryConnectLine.gameObject).GetComponent<ConnectLineController>();
 
-        newLine.GetComponent<ConnectLineController>().startPoint = from.gameObject;
-        newLine.GetComponent<ConnectLineController>().endPoint = to.gameObject;
-        newLine.GetComponent<ConnectLineController>().labelText.SetActive(displayLabel);
+        newLine.startPoint = from.gameObject;
+        newLine.endPoint = to.gameObject;
+        newLine.labelText.SetActive(displayLabel);
 
+        connectLines.Add(newLine);
         HideVirtualLine();
-        return newLine.GetComponent<ConnectLineController>();
+        return newLine;
     }
 
     public ConnectLineController CreateConnectSecondary(FunctionBlock from, FunctionBlock to, bool displayLabel = false) {
-        GameObject newLine = Instantiate(secondaryConnectLine.gameObject);
+        ConnectLineController newLine = Instantiate(secondaryConnectLine.gameObject).GetComponent<ConnectLineController>();
 
-        newLine.GetComponent<ConnectLineController>().startPoint = from.gameObject;
-        newLine.GetComponent<ConnectLineController>().endPoint = to.gameObject;
-        newLine.GetComponent<ConnectLineController>().labelText.SetActive(displayLabel);
+        newLine.startPoint = from.gameObject;
+        newLine.endPoint = to.gameObject;
+        newLine.labelText.SetActive(displayLabel);
 
+        connectLines.Add(newLine);
         HideVirtualLine();
-        return newLine.GetComponent<ConnectLineController>();
+        return newLine;
     }
 
     public void StartTest() {
@@ -318,6 +359,9 @@ public class GameManager : MonoBehaviour {
                 StartTestAllCases();
                 break;
         }
+
+        UIManager.instance.OnStartSimulate();
+        gameplayState = GameConfig.GameplayState.Simulating;
     }
 
     private void StartTestAllCases() {
@@ -357,6 +401,9 @@ public class GameManager : MonoBehaviour {
         yield return new WaitForSeconds(GameConfig.VISUALIZE_GAP_RESULT_DURATION);
         variablesPanel.ResetVariables();
         variablesPanel.Hide();
+
+        UIManager.instance.OnStopSimulate();
+        gameplayState = GameConfig.GameplayState.Playing;
     }
 
     private IEnumerator TestAllCases() {
@@ -394,12 +441,19 @@ public class GameManager : MonoBehaviour {
         if (isWin) {
             variablesPanel.Hide();
             UIManager.instance.ShowPopupDelay(UIManager.Popup.Win, 1f);
+
+            UIManager.instance.OnStopSimulate();
+            gameplayState = GameConfig.GameplayState.Playing;
         } else {
             Debug.Log("Opps, try again");
 
             yield return new WaitForSeconds(GameConfig.VISUALIZE_GAP_RESULT_DURATION);
 
             variablesPanel.Hide();
+
+            UIManager.instance.OnStopSimulate();
+            gameplayState = GameConfig.GameplayState.Playing;
+
             foreach (var testCase in testCases)
                 testCase.ResetState();
         }

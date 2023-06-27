@@ -12,7 +12,7 @@ public class AnimatedLineController : MonoBehaviour {
     private LineRenderer lineRenderer;
     private int pointsCount;
 
-    private void Start() {
+    private void Awake() {
         segmentDuration = GameConfig.VISUALIZE_SEGMENT_DURATION;
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.enabled = false;
