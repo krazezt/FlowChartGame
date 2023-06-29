@@ -18,6 +18,9 @@ public class UIManager : MonoBehaviour {
     public CanvasGroup backdrop;
     public PopupBase[] popups;
     public Button customCasePairButton;
+    public Button stopSimulationButton;
+    public Button simulateButton;
+    public Button pauseButton;
 
     public List<Sprite> testCaseStateSprites;
 
@@ -70,12 +73,30 @@ public class UIManager : MonoBehaviour {
             popup.Hide();
     }
 
+    public void Pause() {
+        GameManager.instance.Pause();
+        simulateButton.gameObject.SetActive(true);
+        pauseButton.gameObject.SetActive(false);
+    }
+
+    public void UnPause() {
+        GameManager.instance.UnPause();
+        simulateButton.gameObject.SetActive(false);
+        pauseButton.gameObject.SetActive(true);
+    }
+
     public void OnStartSimulate() {
-        customCasePairButton.interactable = false;
+        customCasePairButton.gameObject.SetActive(false);
+        stopSimulationButton.gameObject.SetActive(true);
+        simulateButton.gameObject.SetActive(false);
+        pauseButton.gameObject.SetActive(true);
     }
 
     public void OnStopSimulate() {
-        customCasePairButton.interactable = true;
+        customCasePairButton.gameObject.SetActive(true);
+        stopSimulationButton.gameObject.SetActive(false);
+        simulateButton.gameObject.SetActive(true);
+        pauseButton.gameObject.SetActive(false);
     }
 
     public void LoadNextLevel() {

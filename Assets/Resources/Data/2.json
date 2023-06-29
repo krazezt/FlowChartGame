@@ -30,37 +30,37 @@
       "id": 5,
       "blockTypeID": 2,
       "text": "A = B",
-      "connectBlocks": [ 0, 1 ]
+      "connectBlocks": [0, 1]
     },
     {
       "id": 6,
       "blockTypeID": 1,
       "text": "UCLN = A",
-      "connectBlocks": [ 2, 0 ]
+      "connectBlocks": [2, 0]
     },
     {
       "id": 7,
       "blockTypeID": 5,
       "text": "A > B",
-      "connectBlocks": [ 0, 1 ]
+      "connectBlocks": [0, 1]
     },
     {
       "id": 8,
       "blockTypeID": 9,
       "text": "A = A - B",
-      "connectBlocks": [ 0, 1, 0 ]
+      "connectBlocks": [0, 1, 0]
     },
     {
       "id": 9,
       "blockTypeID": 9,
       "text": "B = B - A",
-      "connectBlocks": [ 1, 0, 1 ]
+      "connectBlocks": [1, 0, 1]
     },
     {
       "id": 10,
-      "blockTypeID": 13,
+      "blockTypeID": 12,
       "text": "End",
-      "connectBlocks": [ 2, 0, 1 ]
+      "connectBlocks": [2, 0, 1]
     }
   ],
   "testCases": [
@@ -93,5 +93,5 @@
       ]
     }
   ],
-  "validateCode": "int result = 0, i; for (i = Math.Min(inputValues[0].GetOutputValue(), inputValues[1].GetOutputValue()); i >= 1; i--) if (inputValues[0].GetOutputValue() % i == 0 && inputValues[1].GetOutputValue() % i == 0) return checkValue.GetOutputValue() == i; return checkValue.GetOutputValue() == i;"
+  "validateURL": "https://flow-chart-game-server.vercel.app/gameplay/validate/ucln-ab"
 }

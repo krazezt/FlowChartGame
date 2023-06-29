@@ -41,7 +41,7 @@ public class VirtualLine : ConnectLineController {
     public void Show(bool showLabel) {
         lineRenderer.enabled = true;
 
-        Debug.Log("startPoint: " + startPoint.name + " => " + showLabel);
+        //Debug.Log("startPoint: " + startPoint.name + " => " + showLabel);
         labelText.SetActive(showLabel);
     }
 

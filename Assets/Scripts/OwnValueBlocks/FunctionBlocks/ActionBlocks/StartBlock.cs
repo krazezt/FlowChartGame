@@ -3,8 +3,6 @@ using UnityEngine;
 public class StartBlock : ActionBlock {
 
     public override bool ExecuteFunction() {
-        GameManager.instance.ClearResultPoint();
-
         return base.ExecuteFunction();
     }
 

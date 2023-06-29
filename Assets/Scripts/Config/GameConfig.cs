@@ -40,6 +40,7 @@ public class GameConfig {
         Special
     }
 
+    public const int MAX_STEP = 50;
     public const float DRAG_LATENCY = 0.3f;
     public const float MAX_HOLD_OFFSET = 0.5f;
     public const float VISUALIZE_SEGMENT_DURATION = 0.5f;

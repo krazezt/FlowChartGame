@@ -9,5 +9,5 @@ public class LevelDataDTO {
 
     // Content in the CheckEndCondition function, will be run in the EndBlock.
     // Type & Params: (List<OwnValueBlock> inputValues, OwnValueBlock checkValue) => bool
-    public string validateCode;
+    public string validateURL;
 }

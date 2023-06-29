@@ -8,6 +8,7 @@ using static TestCase;
 
 public class GameManager : MonoBehaviour {
     public static GameManager instance;
+
     public GameConfig.AppType appType;
     public GameConfig.GameplayState gameplayState;
     public int currentLevel;
@@ -36,12 +37,14 @@ public class GameManager : MonoBehaviour {
     public int generateGridWidth = 3;
     public int generateGridHeight = 3;
     public const float GRID_CELL_SIZE = 2.5f;
+    public bool onWaiting;
     public LevelDataDTO levelData;
 
     [Header("Testing")]
     public StartBlock startBlock;
 
     private Queue<List<int>> variableLog;
+    private static bool isOutStackRange;
 
     private void Awake() {
         if (instance == null) {
@@ -126,10 +129,16 @@ public class GameManager : MonoBehaviour {
         secondaryVirtualLine.Hide();
     }
 
-    public void AppendResultLinePoint(GameObject obj) {
+    public bool AppendResultLinePoint(GameObject obj) {
         resultDrawLine.AddPoint(obj);
 
         EnqueueVariableLog();
+
+        if (variableLog.Count > GameConfig.MAX_STEP) {
+            isOutStackRange = true;
+            return false;
+        } else
+            return true;
     }
 
     public void EnqueueVariableLog() {
@@ -277,7 +286,7 @@ public class GameManager : MonoBehaviour {
                 case GameConfig.FunctionBlockType.EBMax:
                 case GameConfig.FunctionBlockType.EBUCLN:
                     (functionBlocks[i] as EndBlock).checkValue = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
-                    (functionBlocks[i] as EndBlock).validateCode = levelData.validateCode;
+                    (functionBlocks[i] as EndBlock).validateURL = levelData.validateURL;
                     for (int j = 1; j < functionBlockDTOs[i].connectBlocks.Count; j++) {
                         (functionBlocks[i] as EndBlock).inputValues.Add(ownValueBlocks[functionBlockDTOs[i].connectBlocks[j]]);
                     }
@@ -349,7 +358,24 @@ public class GameManager : MonoBehaviour {
         return newLine;
     }
 
+    public void RemoveConnectLine(ConnectLineController line) {
+        connectLines.Remove(line);
+        Destroy(line.gameObject);
+    }
+
+    public void Pause() {
+        Time.timeScale = 0f;
+    }
+
+    public void UnPause() {
+        Time.timeScale = 1f;
+    }
+
     public void StartTest() {
+        if (gameplayState == GameConfig.GameplayState.Simulating)
+            return;
+
+        isOutStackRange = false;
         switch (variablesPanel.CurrentState) {
             case VariablesPanel.State.ShowingCustomables:
                 StartTestCustomCase();
@@ -361,6 +387,8 @@ public class GameManager : MonoBehaviour {
         }
 
         UIManager.instance.OnStartSimulate();
+        EndBlock.isAllConditionTrue = true;
+        EndBlock.requestingCount = 0;
         gameplayState = GameConfig.GameplayState.Simulating;
     }
 
@@ -371,6 +399,7 @@ public class GameManager : MonoBehaviour {
     }
 
     private void StartTestCustomCase() {
+        ClearResultPoint();
         resultDrawLine.Hide();
         variablesPanel.Show(VariablesPanel.State.ShowingAll);
         foreach (CasePair casePair in customCasePairs) {
@@ -381,22 +410,13 @@ public class GameManager : MonoBehaviour {
     }
 
     private IEnumerator TestCustomCasePair() {
-        bool passed;
         try {
-            passed = startBlock.ExecuteFunction();
-        } catch {
-            passed = false;
-        }
+            startBlock.ExecuteFunction();
+        } catch { }
 
-        if (!passed) {
-            resultDrawLine.StartAnimateLine();
-            while (resultDrawLine.OnAnimating)
-                yield return null;
-        } else {
-            resultDrawLine.StartAnimateLine();
-            while (resultDrawLine.OnAnimating)
-                yield return null;
-        }
+        resultDrawLine.StartAnimateLine();
+        while (resultDrawLine.OnAnimating || EndBlock.requestingCount > 0)
+            yield return null;
 
         yield return new WaitForSeconds(GameConfig.VISUALIZE_GAP_RESULT_DURATION);
         variablesPanel.ResetVariables();
@@ -406,11 +426,25 @@ public class GameManager : MonoBehaviour {
         gameplayState = GameConfig.GameplayState.Playing;
     }
 
+    public void StopSimulation() {
+        StopAllCoroutines();
+
+        foreach (var testCase in testCases)
+            testCase.ResetState();
+
+        resultDrawLine.StopAnimating();
+        variablesPanel.ResetVariables();
+        variablesPanel.Hide();
+        UIManager.instance.OnStopSimulate();
+        gameplayState = GameConfig.GameplayState.Playing;
+    }
+
     private IEnumerator TestAllCases() {
         bool isWin = true;
 
         foreach (var testCase in testCases) {
             variablesPanel.ResetVariables();
+            ClearResultPoint();
             testCase.SetupTestCase();
             testCase.MarkAsChecking();
 
@@ -422,16 +456,14 @@ public class GameManager : MonoBehaviour {
                 isWin = false;
             }
 
-            if (!passed) {
+            resultDrawLine.StartAnimateLine();
+            while (resultDrawLine.OnAnimating || EndBlock.requestingCount > 0)
+                yield return null;
+
+            if (!passed || !EndBlock.isAllConditionTrue) {
                 isWin = false;
-                resultDrawLine.StartAnimateLine();
-                while (resultDrawLine.OnAnimating)
-                    yield return null;
                 testCase.MarkAsFailed();
             } else {
-                resultDrawLine.StartAnimateLine();
-                while (resultDrawLine.OnAnimating)
-                    yield return null;
                 testCase.MarkAsPassed();
             }
 
@@ -440,12 +472,15 @@ public class GameManager : MonoBehaviour {
 
         if (isWin) {
             variablesPanel.Hide();
-            UIManager.instance.ShowPopupDelay(UIManager.Popup.Win, 1f);
+            UIManager.instance.ShowPopupDelay(UIManager.Popup.Win, 0f);
 
             UIManager.instance.OnStopSimulate();
             gameplayState = GameConfig.GameplayState.Playing;
         } else {
-            Debug.Log("Opps, try again");
+            if (isOutStackRange)
+                Debug.Log("Out stack range!");
+            else
+                Debug.Log("Not true, try again!");
 
             yield return new WaitForSeconds(GameConfig.VISUALIZE_GAP_RESULT_DURATION);
 

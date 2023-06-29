@@ -68,5 +68,5 @@
       ]
     }
   ],
-  "validateCode": "int max = 0; foreach (OwnValueBlock item in inputValues) { if (max == 0) max = item.GetOutputValue(); if (item.GetOutputValue() > max) max = item.GetOutputValue(); } return checkValue.GetOutputValue() == max;"
+  "validateURL": "https://flow-chart-game-server.vercel.app/gameplay/validate/max-ab"
 }

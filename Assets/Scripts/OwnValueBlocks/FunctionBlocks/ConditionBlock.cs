@@ -21,17 +21,16 @@ public class ConditionBlock : FunctionBlock {
     public Operator operatorType;
 
     public override bool ExecuteFunction() {
-        base.ExecuteFunction();
+        if (!base.ExecuteFunction())
+            return false;
 
         if (CheckCondition()) {
             Debug.Log("True, " + operatorType + ", Left: " + LeftSideOperandBlock.GetOutputValue() + ", right: " + RightSideOperandBlock.GetOutputValue());
-            TrueConditionBlock.ExecuteFunction();
+            return TrueConditionBlock.ExecuteFunction();
         } else {
             Debug.Log("False, " + operatorType + ", Left: " + LeftSideOperandBlock.GetOutputValue() + ", right: " + RightSideOperandBlock.GetOutputValue());
-            FalseConditionBlock.ExecuteFunction();
+            return FalseConditionBlock.ExecuteFunction();
         }
-
-        return true;
     }
 
     protected override void Awake() {
@@ -98,8 +97,9 @@ public class ConditionBlock : FunctionBlock {
     private void SetTrueConnection(GameObject obj) {
         if (obj == null) {
             TrueConditionBlock = null;
-            if (lineToTrue != null)
-                Destroy(lineToTrue.gameObject);
+            if (lineToTrue != null) {
+                GameManager.instance.RemoveConnectLine(lineToTrue);
+            }
             lineToTrue = null;
 
             return;
@@ -108,15 +108,16 @@ public class ConditionBlock : FunctionBlock {
         TrueConditionBlock = obj.GetComponent<FunctionBlock>();
 
         if (lineToTrue != null)
-            Destroy(lineToTrue.gameObject);
+            GameManager.instance.RemoveConnectLine(lineToTrue);
         lineToTrue = GameManager.instance.CreateConnectPrimary(this, TrueConditionBlock, true);
     }
 
     private void SetFalseConnection(GameObject obj) {
         if (obj == null) {
             FalseConditionBlock = null;
-            if (lineToFalse != null)
-                Destroy(lineToFalse.gameObject);
+            if (lineToFalse != null) {
+                GameManager.instance.RemoveConnectLine(lineToFalse);
+            }
             lineToFalse = null;
 
             return;
@@ -125,7 +126,7 @@ public class ConditionBlock : FunctionBlock {
         FalseConditionBlock = obj.GetComponent<FunctionBlock>();
 
         if (lineToFalse != null)
-            Destroy(lineToFalse.gameObject);
+            GameManager.instance.RemoveConnectLine(lineToFalse);
         lineToFalse = GameManager.instance.CreateConnectSecondary(this, FalseConditionBlock, true);
     }
 }

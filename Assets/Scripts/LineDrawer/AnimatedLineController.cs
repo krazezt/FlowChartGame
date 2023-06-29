@@ -11,6 +11,7 @@ public class AnimatedLineController : MonoBehaviour {
     private float segmentDuration;
     private LineRenderer lineRenderer;
     private int pointsCount;
+    private GameObject processObj;
 
     private void Awake() {
         segmentDuration = GameConfig.VISUALIZE_SEGMENT_DURATION;
@@ -33,6 +34,7 @@ public class AnimatedLineController : MonoBehaviour {
     }
 
     public void AddPoint(GameObject newPoint) {
+        Debug.Log(linePoints.Count);
         linePoints.Add(newPoint);
         lineRenderer.positionCount = linePoints.Count;
     }
@@ -51,7 +53,7 @@ public class AnimatedLineController : MonoBehaviour {
     }
 
     private IEnumerator AnimateLine() {
-        GameObject processObj = Instantiate(processObject);
+        processObj = Instantiate(processObject);
         OnAnimating = true;
         pointsCount = linePoints.Count;
         //float segmentDuration = animationDurationOneEdge / pointsCount;
@@ -79,6 +81,11 @@ public class AnimatedLineController : MonoBehaviour {
         }
 
         yield return new WaitForSeconds(1);
+        StopAnimating();
+    }
+
+    public void StopAnimating() {
+        StopAllCoroutines();
         lineRenderer.enabled = false;
         Destroy(processObj);
         OnAnimating = false;

@@ -2,8 +2,9 @@ using UnityEngine;
 
 public class FunctionBlock : OwnValueBlock {
     public virtual bool ExecuteFunction() {
-        // Debug.Log("FunctionBlock: " + gameObject.name);
-        GameManager.instance.AppendResultLinePoint(gameObject);
-        return false;
+#if UNITY_EDITOR
+        //Debug.Log("FunctionBlock: " + gameObject.name);
+#endif
+        return GameManager.instance.AppendResultLinePoint(gameObject);
     }
 }

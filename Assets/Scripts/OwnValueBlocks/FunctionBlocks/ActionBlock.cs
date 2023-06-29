@@ -5,7 +5,8 @@ public class ActionBlock : FunctionBlock {
     [HideInInspector] public ConnectLineController lineToNext;
 
     public override bool ExecuteFunction() {
-        base.ExecuteFunction();
+        if (!base.ExecuteFunction())
+            return false;
 
         return NextBlock.ExecuteFunction();
     }
@@ -16,8 +17,9 @@ public class ActionBlock : FunctionBlock {
 
         NextBlock = m_listConnection[^1].gameObject.GetComponent<FunctionBlock>();
 
-        if (lineToNext != null)
-            Destroy(lineToNext.gameObject);
+        if (lineToNext != null) {
+            GameManager.instance.RemoveConnectLine(lineToNext);
+        }
 
         lineToNext = GameManager.instance.CreateConnectPrimary(this, NextBlock);
 
