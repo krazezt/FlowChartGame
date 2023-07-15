@@ -17,13 +17,13 @@
     {
       "id": 3,
       "blockTypeID": 0,
-      "text": "Start",
+      "text": "Bắt đầu",
       "connectBlocks": []
     },
     {
       "id": 4,
       "blockTypeID": 7,
-      "text": "Input A, B",
+      "text": "Nhập A, B",
       "connectBlocks": []
     },
     {
@@ -59,7 +59,7 @@
     {
       "id": 10,
       "blockTypeID": 12,
-      "text": "End",
+      "text": "Kết thúc",
       "connectBlocks": [2, 0, 1]
     }
   ],

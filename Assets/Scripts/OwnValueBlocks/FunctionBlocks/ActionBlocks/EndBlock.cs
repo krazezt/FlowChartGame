@@ -21,10 +21,7 @@ public class EndBlock : ActionBlock {
         GameManager.instance.AppendResultLinePoint(gameObject);
         StartCoroutine(RequestValidate());
 
-        if (CheckEndCondition()) {
-            return true;
-        } else
-            return false;
+        return true;
     }
 
     private IEnumerator RequestValidate() {

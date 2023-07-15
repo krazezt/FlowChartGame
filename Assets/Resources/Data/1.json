@@ -16,12 +16,12 @@
   "functionBlocks": [
     {
       "blockTypeID": 0,
-      "text": "Start",
+      "text": "Bắt đầu",
       "connectBlocks": []
     },
     {
       "blockTypeID": 7,
-      "text": "Input A, B",
+      "text": "Nhập A, B",
       "connectBlocks": []
     },
     {
@@ -41,12 +41,12 @@
     },
     {
       "blockTypeID": 7,
-      "text": "Output Max",
+      "text": "Xuất Max",
       "connectBlocks": []
     },
     {
       "blockTypeID": 12,
-      "text": "End",
+      "text": "Kết thúc",
       "connectBlocks": [2, 0, 1]
     }
   ],

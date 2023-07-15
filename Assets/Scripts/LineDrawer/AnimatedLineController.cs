@@ -34,7 +34,6 @@ public class AnimatedLineController : MonoBehaviour {
     }
 
     public void AddPoint(GameObject newPoint) {
-        Debug.Log(linePoints.Count);
         linePoints.Add(newPoint);
         lineRenderer.positionCount = linePoints.Count;
     }

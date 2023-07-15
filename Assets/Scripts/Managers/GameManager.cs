@@ -1,8 +1,9 @@
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 using static TestCase;
 
@@ -11,7 +12,6 @@ public class GameManager : MonoBehaviour {
 
     public GameConfig.AppType appType;
     public GameConfig.GameplayState gameplayState;
-    public int currentLevel;
 
     public Image testCasesPanel;
     public VariablesPanel variablesPanel;
@@ -45,6 +45,8 @@ public class GameManager : MonoBehaviour {
 
     private Queue<List<int>> variableLog;
     private static bool isOutStackRange;
+    private int prevLevel = -1;
+    private int currentLevel;
 
     private void Awake() {
         if (instance == null) {
@@ -59,13 +61,40 @@ public class GameManager : MonoBehaviour {
         connectLines = new();
 
         Application.targetFrameRate = 60;
+        prevLevel = -1;
+        currentLevel = -1;
+        onWaiting = false;
     }
 
-    private void LoadLevel(int level) {
-        ClearLevel();
-        levelData = gameObject.GetOrAddComponent<RWFile>().ReadFileData<LevelDataDTO>("Data/" + level);
-        currentLevel = level;
-        InitLevel(levelData);
+    private void LoadLevel() {
+        StartCoroutine(LoadLevelCoroutine());
+    }
+
+    private IEnumerator LoadLevelCoroutine() {
+        prevLevel = currentLevel;
+        onWaiting = true;
+        UIManager.instance.ShowLoadingScreen();
+
+        string apiRoute = "https://flow-chart-game-server.vercel.app/gameplay/data/get-random-level";
+        WWWForm form = new();
+        form.AddField("except", prevLevel);
+
+        using UnityWebRequest www = UnityWebRequest.Post(apiRoute, form);
+        yield return www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success) {
+            Debug.Log(www.error);
+        } else {
+            ClearLevel();
+            levelData = JsonConvert.DeserializeObject<LevelDataDTO>(www.downloadHandler.text);
+            InitLevel(levelData);
+            currentLevel = levelData.index;
+        }
+
+        //UIManager.instance.HidePopup();
+        UIManager.instance.HideLoadingScreen();
+        UIManager.instance.ShowRequestPopup();
+        onWaiting = false;
     }
 
     private void ClearLevel() {
@@ -97,11 +126,11 @@ public class GameManager : MonoBehaviour {
     }
 
     public void LoadNextLevel() {
-        LoadLevel(currentLevel + 1);
+        LoadLevel();
     }
 
     private void Start() {
-        LoadLevel(1);
+        LoadLevel();
     }
 
     public void ShowPrimaryVirtualLine(GameObject startPoint, bool displayLabel = false) {
@@ -162,6 +191,7 @@ public class GameManager : MonoBehaviour {
         InitFunctionBlocks(levelData.functionBlocks);
         InitTestCases(levelData.testCases);
 
+        UIManager.instance.SetRequestText(levelData.request);
         variablesPanel.SetVariables(variableBlocks, (customCasePairs.Select((ele) => ele.variableBlock)).ToList());
         variablesPanel.Hide();
 
@@ -456,6 +486,7 @@ public class GameManager : MonoBehaviour {
                 isWin = false;
             }
 
+            Debug.Log("passed: " + passed + ", isWin: " + isWin);
             resultDrawLine.StartAnimateLine();
             while (resultDrawLine.OnAnimating || EndBlock.requestingCount > 0)
                 yield return null;
