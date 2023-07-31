@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour {
@@ -31,13 +32,7 @@ public class UIManager : MonoBehaviour {
     public List<Sprite> testCaseStateSprites;
 
     private void Awake() {
-        if (instance == null) {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        } else {
-            Destroy(gameObject);
-            return;
-        };
+        instance = this;
 
         HidePopup();
     }
@@ -149,5 +144,21 @@ public class UIManager : MonoBehaviour {
 
     public void SetRequestText(string text) {
         requestText.text = text;
+    }
+
+    public void SetSFXOn(bool sfxOn) {
+        AudioManager.instance.SetSFXVolume(sfxOn ? AudioConfig.DEFAULT_SFX_VOLUME : 0f);
+    }
+
+    public void SetBGMOn(bool bgmOn) {
+        AudioManager.instance.SetBGMVolume(bgmOn ? AudioConfig.DEFAULT_BGM_VOLUME : 0f);
+    }
+
+    public void OnButtonClick() {
+        AudioManager.instance.PlaySFX_ButtonClick();
+    }
+
+    public void QuitToMainMenu() {
+        SceneManager.LoadScene("MainMenu");
     }
 }

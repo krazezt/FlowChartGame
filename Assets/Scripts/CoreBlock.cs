@@ -39,6 +39,7 @@ public class CoreBlock : MonoBehaviour {
     private void OnMouseDown() {
         firstTouchPosition = MouseWorldPosition();
         deltaLatency = 0;
+        AudioManager.instance.PlaySFX(AudioConfig.Track.BlockTouch);
     }
 
     private void OnMouseDrag() {

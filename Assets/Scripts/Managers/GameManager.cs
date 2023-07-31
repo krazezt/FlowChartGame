@@ -49,13 +49,7 @@ public class GameManager : MonoBehaviour {
     private int currentLevel;
 
     private void Awake() {
-        if (instance == null) {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        } else {
-            Destroy(gameObject);
-            return;
-        }
+        instance = this;
 
         variableLog = new();
         connectLines = new();
@@ -503,6 +497,7 @@ public class GameManager : MonoBehaviour {
 
         if (isWin) {
             variablesPanel.Hide();
+            AudioManager.instance.PlaySFX(AudioConfig.Track.Win);
             UIManager.instance.ShowPopupDelay(UIManager.Popup.Win, 0f);
 
             UIManager.instance.OnStopSimulate();
