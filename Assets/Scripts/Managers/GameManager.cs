@@ -307,13 +307,20 @@ public class GameManager : MonoBehaviour {
                     (functionBlocks[i] as OperationBlock).OutputBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[2]] as VariableBlock;
                     break;
 
-                case GameConfig.FunctionBlockType.EBMax:
-                case GameConfig.FunctionBlockType.EBUCLN:
+                case GameConfig.FunctionBlockType.EndBlock:
                     (functionBlocks[i] as EndBlock).checkValue = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
                     (functionBlocks[i] as EndBlock).validateURL = levelData.validateURL;
                     for (int j = 1; j < functionBlockDTOs[i].connectBlocks.Count; j++) {
                         (functionBlocks[i] as EndBlock).inputValues.Add(ownValueBlocks[functionBlockDTOs[i].connectBlocks[j]]);
                     }
+                    break;
+
+                case GameConfig.FunctionBlockType.Increase:
+                    (functionBlocks[i] as IncreaseBlock).VariableBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]] as VariableBlock;
+                    break;
+
+                case GameConfig.FunctionBlockType.Decrease:
+                    (functionBlocks[i] as DecreaseBlock).VariableBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]] as VariableBlock;
                     break;
             }
         }

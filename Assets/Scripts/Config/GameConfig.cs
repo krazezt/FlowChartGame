@@ -31,8 +31,9 @@ public class GameConfig {
         Subtract,
         Multiply,
         Divide,
-        EBMax,
-        EBUCLN,
+        EndBlock,
+        Increase,
+        Decrease,
     }
 
     public enum TestCaseType {
