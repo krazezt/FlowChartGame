@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class VirtualLine : ConnectLineController {
@@ -43,6 +44,14 @@ public class VirtualLine : ConnectLineController {
 
         //Debug.Log("startPoint: " + startPoint.name + " => " + showLabel);
         labelText.SetActive(showLabel);
+    }
+
+    public void Show(string label) {
+        lineRenderer.enabled = true;
+
+        //Debug.Log("startPoint: " + startPoint.name + " => " + showLabel);
+        labelText.SetActive(true);
+        labelText.GetComponentInChildren<TMP_Text>().text = label;
     }
 
     public void Hide() {

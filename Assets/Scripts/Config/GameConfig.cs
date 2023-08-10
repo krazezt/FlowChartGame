@@ -34,6 +34,7 @@ public class GameConfig {
         EndBlock,
         Increase,
         Decrease,
+        SwitchCase,
     }
 
     public enum TestCaseType {

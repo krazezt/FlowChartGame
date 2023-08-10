@@ -6,4 +6,5 @@ public class FunctionBlockDTO {
     public int blockTypeID;                 // GameConfig.FunctionBlockType.
     public string text;
     public List<int> connectBlocks;         // Index in GameManager.ownValueBlocks.
+    public List<int> values;
 }

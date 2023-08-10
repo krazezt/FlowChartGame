@@ -2280,6 +2280,7 @@ MonoBehaviour:
   - {fileID: 1780259517500987703, guid: 41ae5f29406c8e148867c78ea031133a, type: 3}
   - {fileID: 4769098145740988941, guid: ea38b97853012e44b9e60509d961b75d, type: 3}
   - {fileID: 3710583612487678736, guid: 749b57c2fe98e8b44837254a219ae099, type: 3}
+  - {fileID: 1801879238532358029, guid: bb06ef4da8df3e54191d942eb99e4671, type: 3}
   testCasePrefabs:
   - {fileID: 2499292815694298258, guid: 737d3b0b62c57e84faa4e78afd7192ee, type: 3}
   variableBlocks: []
@@ -13234,7 +13235,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1999150409}
-  m_LocalRotation: {x: 0, y: 0, z: 0.1878292, w: 0.98220176}
+  m_LocalRotation: {x: 0, y: 0, z: -0.5004296, w: 0.8657772}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

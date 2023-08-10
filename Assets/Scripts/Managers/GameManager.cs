@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -130,6 +131,11 @@ public class GameManager : MonoBehaviour {
     public void ShowPrimaryVirtualLine(GameObject startPoint, bool displayLabel = false) {
         primaryVirtualLine.SetStartPoint(startPoint);
         primaryVirtualLine.Show(displayLabel);
+    }
+
+    public void ShowPrimaryVirtualLine(GameObject startPoint, string label) {
+        primaryVirtualLine.SetStartPoint(startPoint);
+        primaryVirtualLine.Show(label);
     }
 
     public void ShowSecondaryVirtualLine(GameObject startPoint, bool displayLabel = false) {
@@ -322,6 +328,11 @@ public class GameManager : MonoBehaviour {
                 case GameConfig.FunctionBlockType.Decrease:
                     (functionBlocks[i] as DecreaseBlock).VariableBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]] as VariableBlock;
                     break;
+
+                case GameConfig.FunctionBlockType.SwitchCase:
+                    (functionBlocks[i] as SwitchCaseBlock).valueBlock = ownValueBlocks[functionBlockDTOs[i].connectBlocks[0]];
+                    (functionBlocks[i] as SwitchCaseBlock).values = functionBlockDTOs[i].values;
+                    break;
             }
         }
     }
@@ -371,6 +382,19 @@ public class GameManager : MonoBehaviour {
         newLine.startPoint = from.gameObject;
         newLine.endPoint = to.gameObject;
         newLine.labelText.SetActive(displayLabel);
+
+        connectLines.Add(newLine);
+        HideVirtualLine();
+        return newLine;
+    }
+
+    public ConnectLineController CreateConnectPrimary(FunctionBlock from, FunctionBlock to, string label) {
+        ConnectLineController newLine = Instantiate(primaryConnectLine.gameObject).GetComponent<ConnectLineController>();
+
+        newLine.startPoint = from.gameObject;
+        newLine.endPoint = to.gameObject;
+        newLine.labelText.GetComponentInChildren<TMP_Text>().text = label;
+        newLine.labelText.SetActive(true);
 
         connectLines.Add(newLine);
         HideVirtualLine();

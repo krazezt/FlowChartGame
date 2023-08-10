@@ -3906,7 +3906,7 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 1006fec0af2acdd439c7d3aeb589fdc6, type: 3}
     volumeMultiply: 1
     pitch: 1
-    loop: 0
+    loop: 1
     audioSource: {fileID: 0}
   SFXList:
   - track: 0
